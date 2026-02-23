@@ -131,20 +131,6 @@ http://localhost:5173
 
 ---
 
-## 📸 UI Preview
-
-> *(Add screenshots here to make your repo look 🔥 professional)*
-
-Example:
-
-```
-/screenshots/home.png
-/screenshots/admin-dashboard.png
-/screenshots/checkout.png
-```
-
----
-
 ## 🔐 Security Practices
 
 * Environment Variables Protected
