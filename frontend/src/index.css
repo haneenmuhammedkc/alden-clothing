@@ -1,0 +1,305 @@
+/* GLOBAL STYLESHEET — ALDEN UI
+   Tailwind Base / Typography / Components / Utilities / Animations */
+
+/* BASE — TAILWIND + GLOBAL TYPOGRAPHY */
+
+@import "tailwindcss";
+
+/* Font: Montserrat Used for titles + alerts */
+@font-face {
+  font-family: "Montserrat";
+  src: url("/fonts/Montserrat/Montserrat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Global typography overrides */
+.title,
+.swal2-popup {
+  font-family: "Montserrat", sans-serif !important;
+}
+
+/* COMPONENTS — ALDEN ICON + SWEETALERT UI */
+
+/* Alden Alert Icon Circular animated status icon */
+.alden-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 600;
+  animation: pulseGlow 1.5s infinite;
+  transition: transform 0.3s ease;
+}
+
+/* Icon color variations */
+.alden-icon.success { border-color: #4ade80; color: #4ade80; }
+.alden-icon.error   { border-color: #f87171; color: #f87171; }
+.alden-icon.info    { border-color: #60a5fa; color: #60a5fa; }
+.alden-icon.warn    { border-color: #facc15; color: #facc15; }
+
+/* Hover scale effect */
+.alden-alert:hover .alden-icon {
+  transform: scale(1.08);
+}
+
+
+/* SweetAlert Popup Glass UI */
+.swal2-popup {
+  backdrop-filter: blur(12px);
+  background: rgba(15, 15, 15, 0.3) !important;
+  border-radius: 28px !important;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+
+/* Shared SweetAlert Buttons */
+.swal2-confirm,
+.swal2-cancel {
+  border-radius: 999px !important;
+  padding: 8px 24px !important;
+  transition: all 0.3s ease;
+  font-weight: 500 !important;
+}
+
+/* Confirm Button (Primary) */
+.swal2-confirm {
+  background: white !important;
+  color: black !important;
+  border: 1px solid white !important;
+}
+
+.swal2-confirm:hover {
+  background: black !important;
+  color: white !important;
+}
+
+.swal2-confirm:focus {
+  box-shadow: none !important;
+}
+
+/* Cancel Button (Secondary) */
+.swal2-cancel {
+  background: transparent !important;
+  color: white !important;
+  border: 1px solid white !important;
+}
+
+.swal2-cancel:hover {
+  background: white !important;
+  color: black !important;
+}
+
+
+/* SweetAlert Backdrop Blur */
+.swal2-backdrop-show {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(6px);
+}
+
+
+
+/* UTILITIES — SCROLLBAR + INPUT HELPERS */
+
+/* Hide Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Thin Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Remove Number Input Arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ANIMATIONS — GLOBAL */
+
+/* Pulsing glow used in alert icons */
+@keyframes pulseGlow {
+  0%   { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+  50%  { box-shadow: 0 0 15px rgba(255,255,255,0.7); }
+  100% { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+}
+
+/* Animated status dot */
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.85);
+    background-color: #d1d5db;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    transform: scale(1.25);
+    background-color: #111827;
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+  100% {
+    transform: scale(0.85);
+    background-color: #d1d5db;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ANIMATIONS — ORDER PROCESSING LOADER */
+
+/* Progress bar fill animation */
+@keyframes progressMove {
+  0% {
+    width: 0%;
+    left: 0;
+  }
+  100% {
+    width: 100%;
+    left: 0;
+  }
+}
+
+/* Orbit / ring spinning animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ANIMATIONS — ORDER SUCCESS */
+
+/* SVG checkmark drawing animation */
+@keyframes drawCheck {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Spin animation (⚠️ Only add if you don't already have it) */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ANIMATIONS — FOOTER */
+
+/* Slow bounce used for scroll hint indicators */
+@keyframes bounce-slow {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(100%); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
+
+
+
+/* ANIMATIONS — HERO SECTION */
+
+/* Scanning line animation */
+@keyframes scan {
+  0%   { transform: translateY(0vh); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Outline text effect */
+.stroke-text {
+  -webkit-text-stroke: 1px white;
+}
+
+/* Text reveal from bottom */
+@keyframes reveal-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Fade + slide animation */
+@keyframes fade-in-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Background slow zoom effect */
+@keyframes slow-zoom {
+  from { transform: scale(1.05); }
+  to   { transform: scale(1.15); }
+}
+
+/* ANIMATIONS — UI EFFECTS */
+
+/* Expanding underline animation */
+@keyframes extend-line {
+  from { width: 0; }
+  to   { width: 64px; }
+}
+
+/* Scroll indicator animation */
+@keyframes scroll-progress {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(200%); }
+}
+
+
+
+/* ANIMATION UTILITY CLASSES */
+
+.animate-reveal-up {
+  animation: reveal-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-extend-line {
+  animation: extend-line 1.5s ease-in-out forwards;
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 20s linear infinite alternate;
+}
+
+.animate-scroll-progress {
+  animation: scroll-progress 3s ease-in-out infinite;
+}
+
+/* Animation delay helpers */
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
+
+
+
+/* ACCESSIBILITY */
+
+/* Disable motion for users who prefer reduced animation */
+@media (prefers-reduced-motion: reduce) {
+  .alden-icon {
+    animation: none;
+  }
+}
