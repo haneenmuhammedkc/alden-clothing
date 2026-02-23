@@ -15,4 +15,4 @@ build
 # OS files
 .DS_Store
 
-serviceAccountKey.json
+backend/config/serviceAccountKey.json
