@@ -19,7 +19,7 @@ const Admin_Category = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const res = await axios.get("http://localhost:4001/api/admin/categories", {
+      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/categories", {
         headers: { Authorization: `Bearer ${token}` }
       })
       setCategories(res.data.data)
@@ -33,13 +33,13 @@ const Admin_Category = () => {
       const token = localStorage.getItem("adminToken")
       if (editMode) {
         await axios.put(
-          `http://localhost:4001/api/admin/categories/${selectedId}`,
+          `https://alden-backend-uige.onrender.com/api/admin/categories/${selectedId}`,
           newCategory,
           { headers: { Authorization: `Bearer ${token}` } }
         )
       } else {
         await axios.post(
-          "http://localhost:4001/api/admin/categories/add",
+          "https://alden-backend-uige.onrender.com/api/admin/categories/add",
           newCategory,
           { headers: { Authorization: `Bearer ${token}` } }
         )

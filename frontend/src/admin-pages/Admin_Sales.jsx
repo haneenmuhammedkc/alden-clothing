@@ -16,7 +16,7 @@ const Admin_Sales = () => {
     try {
       const token = localStorage.getItem("adminToken")
       const res = await axios.get(
-        "http://localhost:4001/api/orders/sales-report",
+        "https://alden-backend-uige.onrender.com/api/orders/sales-report",
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { fromDate, toDate }

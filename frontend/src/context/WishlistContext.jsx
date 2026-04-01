@@ -20,7 +20,7 @@ export const WishlistProvider = ({ children }) => {
 
     if(token){
       axios.post(
-        "http://localhost:4001/api/wishlist/add",
+        "https://alden-backend-uige.onrender.com/api/wishlist/add",
         {items:wishlistItems},
         {headers:{Authorization:`Bearer ${token}`}}
       )
@@ -46,7 +46,7 @@ export const WishlistProvider = ({ children }) => {
       try{
         if(token){
           const res = await axios.get(
-            "http://localhost:4001/api/wishlist",
+            "https://alden-backend-uige.onrender.com/api/wishlist",
             {headers:{Authorization:`Bearer ${token}`}}
           )
 

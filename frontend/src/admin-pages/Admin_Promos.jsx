@@ -27,7 +27,7 @@ const AdminPromos = () => {
     try{
       setLoading(true)
       setError(null)
-      const res = await axios.get("http://localhost:4001/api/admin/promos",{
+      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/promos",{
         headers:{ Authorization:`Bearer ${token}` }
       })
       // ensure promos is always array
@@ -45,7 +45,7 @@ const AdminPromos = () => {
   const createPromo = async () => {
     try{
       await axios.post(
-        "http://localhost:4001/api/admin/promos",
+        "https://alden-backend-uige.onrender.com/api/admin/promos",
         form, // ✅ body
         {
           headers:{ Authorization:`Bearer ${token}` } // ✅ config
@@ -63,7 +63,7 @@ const AdminPromos = () => {
   const togglePromo = async (id) => {
     try{
       await axios.patch(
-        `http://localhost:4001/api/admin/promos/${id}/toggle`,
+        `https://alden-backend-uige.onrender.com/api/admin/promos/${id}/toggle`,
         {}, // empty body
         {
           headers:{ Authorization:`Bearer ${token}` }

@@ -85,7 +85,7 @@ const OrderDetails = () => {
       try {
         const token = localStorage.getItem("userToken")
         const res = await axios.get(
-          `http://localhost:4001/api/orders/${id}`,
+          `https://alden-backend-uige.onrender.com/api/orders/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

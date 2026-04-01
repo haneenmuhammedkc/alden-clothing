@@ -17,7 +17,7 @@ const Wallet = () => {
     const fetchWallet = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get("http://localhost:4001/api/wallet", { headers: { Authorization: `Bearer ${token}` } })
+        const res = await axios.get("https://alden-backend-uige.onrender.com/api/wallet", { headers: { Authorization: `Bearer ${token}` } })
         setBalance(res.data.balance || 0)
         setTransactions(res.data.transactions || [])
         setUserName(res.data.user?.name || "User")
@@ -36,14 +36,14 @@ const Wallet = () => {
       const token = localStorage.getItem("userToken")
       const paymentId = `PAY_${Date.now()}`
       const res = await axios.post(
-        "http://localhost:4001/api/wallet/credit",
+        "https://alden-backend-uige.onrender.com/api/wallet/credit",
         { amount, paymentId },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       setBalance(res.data.balance)
 
       // refresh wallet data
-      const walletRes = await axios.get("http://localhost:4001/api/wallet", {
+      const walletRes = await axios.get("https://alden-backend-uige.onrender.com/api/wallet", {
         headers: {
           Authorization: `Bearer ${token}`
         }

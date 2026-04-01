@@ -31,7 +31,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get("http://localhost:4001/api/users/me", {
+        const res = await axios.get("https://alden-backend-uige.onrender.com/api/users/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -66,7 +66,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("userToken")
       await axios.put(
-        "http://localhost:4001/api/users/change-password",
+        "https://alden-backend-uige.onrender.com/api/users/change-password",
         {
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
@@ -115,7 +115,7 @@ const Profile = () => {
       // Upload to cloudinary first
       if (editData.image) { imageUrl = await uploadImageToCloudinary(editData.image) }
       const res = await axios.put(
-        "http://localhost:4001/api/users/me",
+        "https://alden-backend-uige.onrender.com/api/users/me",
         { name: editData.name, phone: editData.phone, profileImage: imageUrl },
         {
           headers: {

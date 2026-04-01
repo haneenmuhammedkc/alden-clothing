@@ -18,7 +18,7 @@ const ForgotPassword = () => {
     try {
       setLoading(true)
       setError("")
-      await axios.post("http://localhost:4001/api/users/forgot-password", { email })
+      await axios.post("https://alden-backend-uige.onrender.com/api/users/forgot-password", { email })
       showSuccess("OTP Sent", "Check your email")
       navigate("/reset-password", { state: { email } })
     } catch (err) {

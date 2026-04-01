@@ -73,7 +73,7 @@ const Admin_Products = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("adminToken") // 👈 get JWT
-      const res = await axios.get("http://localhost:4001/api/admin/products", {
+      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/products", {
         headers: {
           Authorization: `Bearer ${token}`, // 👈 SEND JWT
         },
@@ -123,7 +123,7 @@ const Admin_Products = () => {
     try {
       const token = localStorage.getItem("adminToken")
       const res = await axios.get(
-        "http://localhost:4001/api/admin/products/deleted",
+        "https://alden-backend-uige.onrender.com/api/admin/products/deleted",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -141,7 +141,7 @@ const Admin_Products = () => {
     try {
       const token = localStorage.getItem("adminToken")
       await axios.put(
-        `http://localhost:4001/api/admin/products/soft-delete/${id}`,
+        `https://alden-backend-uige.onrender.com/api/admin/products/soft-delete/${id}`,
         {},
         {
           headers: {
@@ -163,7 +163,7 @@ const Admin_Products = () => {
       const imageUrls = await uploadImagesToCloudinary(selectedImages)
 
       await axios.post(
-        "http://localhost:4001/api/admin/products/add",
+        "https://alden-backend-uige.onrender.com/api/admin/products/add",
         { ...productData, images: imageUrls },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -199,7 +199,7 @@ const Admin_Products = () => {
       }
 
       await axios.put(
-        `http://localhost:4001/api/admin/products/update/${selectedProduct._id}`,
+        `https://alden-backend-uige.onrender.com/api/admin/products/update/${selectedProduct._id}`,
         updatedData,
         { headers: { Authorization: `Bearer ${token}` } },
       )
@@ -216,7 +216,7 @@ const Admin_Products = () => {
     try {
       const token = localStorage.getItem("adminToken")
       const res = await axios.get(
-        "http://localhost:4001/api/admin/categories",
+        "https://alden-backend-uige.onrender.com/api/admin/categories",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -235,7 +235,7 @@ const Admin_Products = () => {
     try {
       const token = localStorage.getItem("adminToken")
       await axios.put(
-        `http://localhost:4001/api/admin/products/restore/${id}`,
+        `https://alden-backend-uige.onrender.com/api/admin/products/restore/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       )

@@ -25,7 +25,7 @@ const Admin_Customers = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true)
-      const res = await axios.get("http://localhost:4001/api/admin/customers", {
+      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/customers", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`
         }
@@ -41,7 +41,7 @@ const Admin_Customers = () => {
   const toggleStatus = async (id, currentStatus) => {
     try {
       await axios.patch(
-        `http://localhost:4001/api/admin/customers/${id}/status`,
+        `https://alden-backend-uige.onrender.com/api/admin/customers/${id}/status`,
         {
           status: currentStatus === "Active" ? "Blocked" : "Active"
         },

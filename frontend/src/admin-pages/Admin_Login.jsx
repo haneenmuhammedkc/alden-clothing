@@ -21,7 +21,7 @@ const Admin_Login = () => {
       setLoading(true)
       showLoading("Authenticating...")
       const response = await axios.post(
-        "http://localhost:4001/api/admin/auth/a-login",
+        "https://alden-backend-uige.onrender.com/api/admin/auth/a-login",
         { email, password }
       )
       Swal.close() // close loading

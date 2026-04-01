@@ -14,7 +14,7 @@ const Admin_Dashboard = () => {
       try {
         const token = localStorage.getItem("adminToken")
         const res = await axios.get(
-          "http://localhost:4001/api/admin/auth/recent-orders",
+          "https://alden-backend-uige.onrender.com/api/admin/auth/recent-orders",
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -31,7 +31,7 @@ const Admin_Dashboard = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("adminToken")
-        const res = await axios.get("http://localhost:4001/api/admin/auth/dashboard-stats", {
+        const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/auth/dashboard-stats", {
           headers: {
             Authorization: `Bearer ${token}`
           }

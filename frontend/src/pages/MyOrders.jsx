@@ -30,7 +30,7 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get("http://localhost:4001/api/orders/my", {
+        const res = await axios.get("https://alden-backend-uige.onrender.com/api/orders/my", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -78,7 +78,7 @@ const MyOrders = () => {
     try {
       const token = localStorage.getItem("userToken")
       await axios.put(
-        `http://localhost:4001/api/orders/${orderId}/cancel`,
+        `https://alden-backend-uige.onrender.com/api/orders/${orderId}/cancel`,
         {},
         {
           headers: {

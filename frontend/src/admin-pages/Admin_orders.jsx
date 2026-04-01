@@ -19,7 +19,7 @@ const Admin_Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:4001/api/orders", {
+      const res = await axios.get("https://alden-backend-uige.onrender.com/api/orders", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`
         }

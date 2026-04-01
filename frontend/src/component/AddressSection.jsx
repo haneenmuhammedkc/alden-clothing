@@ -24,7 +24,7 @@ const AddressSection = () => {
     const fetchAddresses = async () => {
       try {
         const token = localStorage.getItem("userToken");
-        const res = await axios.get("http://localhost:4001/api/users/address", {
+        const res = await axios.get("https://alden-backend-uige.onrender.com/api/users/address", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -63,7 +63,7 @@ const AddressSection = () => {
       if (editingAddressId) {
         // UPDATE
         res = await axios.put(
-          `http://localhost:4001/api/users/address/${editingAddressId}`,
+          `https://alden-backend-uige.onrender.com/api/users/address/${editingAddressId}`,
           payload,
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -72,7 +72,7 @@ const AddressSection = () => {
       } else {
         // CREATE
         res = await axios.post(
-          "http://localhost:4001/api/users/address",
+          "https://alden-backend-uige.onrender.com/api/users/address",
           payload,
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -91,7 +91,7 @@ const AddressSection = () => {
     try {
       const token = localStorage.getItem("userToken")
       const res = await axios.put(
-        `http://localhost:4001/api/users/address/${addressId}/default`,
+        `https://alden-backend-uige.onrender.com/api/users/address/${addressId}/default`,
         {},
         {
           headers: {
@@ -111,7 +111,7 @@ const AddressSection = () => {
     try {
       const token = localStorage.getItem("userToken")
       const res = await axios.delete(
-        `http://localhost:4001/api/users/address/${addressId}`,
+        `https://alden-backend-uige.onrender.com/api/users/address/${addressId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

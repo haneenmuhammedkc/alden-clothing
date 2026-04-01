@@ -41,7 +41,7 @@ const ResetPassword = () => {
       setLoading(true)
       setError("")
 
-      await axios.post("http://localhost:4001/api/users/reset-password", {
+      await axios.post("https://alden-backend-uige.onrender.com/api/users/reset-password", {
         email,
         otp,
         newPassword

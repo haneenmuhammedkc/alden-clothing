@@ -27,7 +27,7 @@ const TransactionHistory = () => {
         return
       }
       const { data } = await axios.get(
-        "http://localhost:4001/api/transactions/my",
+        "https://alden-backend-uige.onrender.com/api/transactions/my",
         {
           headers: {
             Authorization: `Bearer ${token}`

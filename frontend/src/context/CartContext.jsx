@@ -23,7 +23,7 @@ export const CartProvider = ({ children }) => {
 
     if(token){
       axios.post(
-        "http://localhost:4001/api/cart/add",
+        "https://alden-backend-uige.onrender.com/api/cart/add",
         {items:cartItems},
         {headers:{Authorization:`Bearer ${token}`}}
       )
@@ -91,7 +91,7 @@ export const CartProvider = ({ children }) => {
       try{
         if(token){
           const res = await axios.get(
-            "http://localhost:4001/api/cart",
+            "https://alden-backend-uige.onrender.com/api/cart",
             {headers:{Authorization:`Bearer ${token}`}}
           )
           setCartItems(res.data.items || [])
