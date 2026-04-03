@@ -30,9 +30,10 @@ app.use(express.json())
 
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: true,
+    origin: [
+      "http://localhost:5173",
+      "https://alden-clothing.vercel.app"
+    ],
   })
 )
 
