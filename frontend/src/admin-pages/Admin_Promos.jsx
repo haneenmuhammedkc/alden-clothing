@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { FiToggleLeft, FiToggleRight } from "react-icons/fi"
 import Admin_Sidebar from "../component/Admin_Sidebar"
 import { FaBars } from "react-icons/fa"
+import axiosInstance from "../utils/axiosInstance"
 
 const AdminPromos = () => {
 
@@ -27,7 +28,7 @@ const AdminPromos = () => {
     try{
       setLoading(true)
       setError(null)
-      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/promos",{
+      const res = await axiosInstance.get("/api/admin/promos",{
         headers:{ Authorization:`Bearer ${token}` }
       })
       // ensure promos is always array
@@ -44,8 +45,8 @@ const AdminPromos = () => {
   // Create Promo
   const createPromo = async () => {
     try{
-      await axios.post(
-        "https://alden-backend-uige.onrender.com/api/admin/promos",
+      await axiosInstance.post(
+        "/api/admin/promos",
         form, // ✅ body
         {
           headers:{ Authorization:`Bearer ${token}` } // ✅ config
@@ -62,8 +63,8 @@ const AdminPromos = () => {
   // Toggle Promo
   const togglePromo = async (id) => {
     try{
-      await axios.patch(
-        `https://alden-backend-uige.onrender.com/api/admin/promos/${id}/toggle`,
+      await axiosInstance.patch(
+        `/api/admin/promos/${id}/toggle`,
         {}, // empty body
         {
           headers:{ Authorization:`Bearer ${token}` }

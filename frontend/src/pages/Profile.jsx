@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
 import { FiEdit, FiLogOut, FiLock, FiPackage, FiCreditCard, FiRepeat, FiX, FiChevronRight, FiUser, FiMail, FiPhone } from "react-icons/fi"
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import AddressSection from "../component/AddressSection"
 import { showConfirm, showSuccess } from "../utils/alerts"
 import { motion, AnimatePresence } from "framer-motion"
+import axiosInstance from "../utils/axiosInstance"
 
 const Profile = () => {
   const getInitials = (name = "") => {
@@ -31,7 +31,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get("https://alden-backend-uige.onrender.com/api/users/me", {
+        const res = await axiosInstance.get("/api/users/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -65,8 +65,8 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("userToken")
-      await axios.put(
-        "https://alden-backend-uige.onrender.com/api/users/change-password",
+      await axiosInstance.put(
+        "/api/users/change-password",
         {
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
@@ -114,8 +114,8 @@ const Profile = () => {
 
       // Upload to cloudinary first
       if (editData.image) { imageUrl = await uploadImageToCloudinary(editData.image) }
-      const res = await axios.put(
-        "https://alden-backend-uige.onrender.com/api/users/me",
+      const res = await axiosInstance.put(
+        "/api/users/me",
         { name: editData.name, phone: editData.phone, profileImage: imageUrl },
         {
           headers: {

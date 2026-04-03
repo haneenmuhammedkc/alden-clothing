@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
 import { motion, AnimatePresence } from "framer-motion"
 import { Package, Clock, Truck, CheckCircle2, XCircle } from "lucide-react"
 import { FiArrowLeft } from "react-icons/fi"
+import axiosInstance from "../utils/axiosInstance"
 
 // Associates each order status with its corresponding icon
 const statusConfig = {
@@ -30,7 +30,7 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get("https://alden-backend-uige.onrender.com/api/orders/my", {
+        const res = await axiosInstance.get("/api/orders/my", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -77,8 +77,8 @@ const MyOrders = () => {
   const handleCancelOrder = async (orderId) => {
     try {
       const token = localStorage.getItem("userToken")
-      await axios.put(
-        `https://alden-backend-uige.onrender.com/api/orders/${orderId}/cancel`,
+      await axiosInstance.put(
+        `/api/orders/${orderId}/cancel`,
         {},
         {
           headers: {

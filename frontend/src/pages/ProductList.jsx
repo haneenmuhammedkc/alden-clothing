@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { useLocation } from "react-router-dom"
-import axios from "axios"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, Filter, ArrowUpDown, LayoutGrid, Search, X, Zap } from "lucide-react"
 import ProductCard from "../component/ProductCard"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
+import axiosInstance from "../utils/axiosInstance"
 
 const ProductList = ({ category, heroImage }) => {
 
@@ -22,7 +22,7 @@ const ProductList = ({ category, heroImage }) => {
     const fetchProducts = async () => {
       setLoading(true)
       try{
-        const res = await axios.get( `${import.meta.env.VITE_API_URL}/api/products?category=${category}` )
+        const res = await axiosInstance.get( `/api/products?category=${category}` )
         setProducts(res.data?.data || [])
       } catch(error){
         console.error("Error fetching products:", error)

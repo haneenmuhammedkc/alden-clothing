@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
-import axios from "axios"
 import { FiCreditCard, FiPackage, FiArrowLeft, FiActivity } from "react-icons/fi"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
+import axiosInstance from "../utils/axiosInstance"
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr)
@@ -26,8 +26,8 @@ const TransactionHistory = () => {
         navigate("/login")
         return
       }
-      const { data } = await axios.get(
-        "https://alden-backend-uige.onrender.com/api/transactions/my",
+      const { data } = await axiosInstance.get(
+        "/api/transactions/my",
         {
           headers: {
             Authorization: `Bearer ${token}`

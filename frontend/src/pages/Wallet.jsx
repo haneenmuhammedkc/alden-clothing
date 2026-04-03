@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import { ArrowLeft, Plus, History, CreditCard, ArrowUpRight, ArrowDownLeft,  Wallet as WalletIcon, Zap, ShieldCheck } from "lucide-react"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
 import { assets } from "../assets/assets"
+import axiosInstance from "../utils/axiosInstance"
 
 const Wallet = () => {
   const [balance, setBalance] = useState(0)
@@ -17,7 +17,7 @@ const Wallet = () => {
     const fetchWallet = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get("https://alden-backend-uige.onrender.com/api/wallet", { headers: { Authorization: `Bearer ${token}` } })
+        const res = await axiosInstance.get("/api/wallet", { headers: { Authorization: `Bearer ${token}` } })
         setBalance(res.data.balance || 0)
         setTransactions(res.data.transactions || [])
         setUserName(res.data.user?.name || "User")
@@ -35,15 +35,15 @@ const Wallet = () => {
     try {
       const token = localStorage.getItem("userToken")
       const paymentId = `PAY_${Date.now()}`
-      const res = await axios.post(
-        "https://alden-backend-uige.onrender.com/api/wallet/credit",
+      const res = await axiosInstance.post(
+        "/api/wallet/credit",
         { amount, paymentId },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       setBalance(res.data.balance)
 
       // refresh wallet data
-      const walletRes = await axios.get("https://alden-backend-uige.onrender.com/api/wallet", {
+      const walletRes = await axiosInstance.get("/api/wallet", {
         headers: {
           Authorization: `Bearer ${token}`
         }

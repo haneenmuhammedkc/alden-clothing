@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import axios from "axios"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { useNavigate, useLocation } from "react-router-dom"
 import { showSuccess, showError, showInfo } from "../utils/alerts"
 import { signInWithPopup } from "firebase/auth"
 import { auth, googleProvider } from "../firebase"
+import axiosInstance from "../utils/axiosInstance"
 
 const User_Login = () => {
   const navigate = useNavigate()
@@ -28,7 +28,7 @@ const User_Login = () => {
       setLoading(true)
       setError("")
 
-      await axios.post("https://alden-backend-uige.onrender.com/api/users/register", registerData)
+      await axiosInstance.post("/api/users/register", registerData)
 
       showInfo("OTP Sent", "Please check your email 📧")
 
@@ -48,7 +48,7 @@ const User_Login = () => {
       setLoading(true)
       setError("")
 
-      await axios.post("https://alden-backend-uige.onrender.com/api/users/verify-otp", { email: otpEmail, otp })
+      await axiosInstance.post("/api/users/verify-otp", { email: otpEmail, otp })
 
       showSuccess("Verified", "Your email has been verified successfully")
 
@@ -68,7 +68,7 @@ const User_Login = () => {
       setLoading(true)
       setError("")
 
-      const res = await axios.post("https://alden-backend-uige.onrender.com/api/users/login", loginData)
+      const res = await axiosInstance.post("/api/users/login", loginData)
 
       localStorage.setItem("userToken", res.data.token)
 
@@ -93,7 +93,7 @@ const User_Login = () => {
       const token = await user.getIdToken()
       console.log("Google Firebase Token:", token) // debug
 
-      const res = await axios.post("https://alden-backend-uige.onrender.com/api/users/google-login", { token })
+      const res = await axiosInstance.post("/api/users/google-login", { token })
 
       localStorage.setItem("userToken", res.data.token)
 

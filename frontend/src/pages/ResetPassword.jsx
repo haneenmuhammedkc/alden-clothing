@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import axios from "axios"
 import { useLocation, useNavigate } from "react-router-dom"
 import { showSuccess, showError } from "../utils/alerts"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
+import axiosInstance from "../utils/axiosInstance"
 
 const ResetPassword = () => {
   const { state } = useLocation()
@@ -41,7 +41,7 @@ const ResetPassword = () => {
       setLoading(true)
       setError("")
 
-      await axios.post("https://alden-backend-uige.onrender.com/api/users/reset-password", {
+      await axiosInstance.post("/api/users/reset-password", {
         email,
         otp,
         newPassword

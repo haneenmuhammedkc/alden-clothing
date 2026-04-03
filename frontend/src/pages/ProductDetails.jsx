@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
 import Navbar from "../component/Navbar.jsx"
 import { FiTruck, FiHeart, FiX, FiCheck, FiChevronRight } from "react-icons/fi"
 import { useCart } from "../context/CartContext.jsx"
 import { motion, AnimatePresence } from "framer-motion"
 import { useWishlist } from "../context/WishlistContext.jsx"
+import axiosInstance from "../utils/axiosInstance.js"
 
 const StarRating = ({ rating, setRating }) => (
   <div className="flex gap-1 text-lg">
@@ -48,9 +48,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/products/${id}`
-        )
+        const res = await axiosInstance.get(`/api/products/${id}`)
         setProduct(res.data.data)
         setSelectedImage(res.data.data.images[0])
       } catch(error){
@@ -84,7 +82,7 @@ const ProductDetails = () => {
   // For Loading and Preparing all reviews
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/feedback/product/${id}`)
+      const res = await axiosInstance.get(`/api/feedback/product/${id}`)
       const data = res.data.data
       setReviews(data)
       if (data.length > 0) {
@@ -127,7 +125,7 @@ const ProductDetails = () => {
         alert("Please login to submit a review")
         return
       }
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/feedback/add`, {
+      await axiosInstance.post("/api/feedback/add", {
         productId: id,
         rating,
         message: reviewText,

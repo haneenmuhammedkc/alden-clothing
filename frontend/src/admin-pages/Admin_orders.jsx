@@ -3,6 +3,7 @@ import Admin_Sidebar from "../component/Admin_Sidebar"
 import { FaBars, FaTrash, FaEye } from "react-icons/fa"
 import axios from "axios"
 import { assets } from "../assets/assets"
+import axiosInstance from "../utils/axiosInstance"
 
 const Admin_Orders = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -19,7 +20,7 @@ const Admin_Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("https://alden-backend-uige.onrender.com/api/orders", {
+      const res = await axiosInstance.get("/api/orders", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`
         }

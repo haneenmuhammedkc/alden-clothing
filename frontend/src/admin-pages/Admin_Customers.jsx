@@ -10,6 +10,7 @@ import {
   FaShoppingCart
 } from "react-icons/fa"
 import axios from "axios"
+import axiosInstance from "../utils/axiosInstance"
 
 const Admin_Customers = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -25,7 +26,7 @@ const Admin_Customers = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true)
-      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/customers", {
+      const res = await axiosInstance.get("/api/admin/customers", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`
         }
@@ -40,8 +41,8 @@ const Admin_Customers = () => {
 
   const toggleStatus = async (id, currentStatus) => {
     try {
-      await axios.patch(
-        `https://alden-backend-uige.onrender.com/api/admin/customers/${id}/status`,
+      await axiosInstance.patch(
+        `/api/admin/customers/${id}/status`,
         {
           status: currentStatus === "Active" ? "Blocked" : "Active"
         },

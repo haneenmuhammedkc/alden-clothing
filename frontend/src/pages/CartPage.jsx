@@ -5,7 +5,7 @@ import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
 import { useCart } from "../context/CartContext"
 import { motion, AnimatePresence } from "framer-motion"
-import axios from "axios"
+import axiosInstance from "../utils/axiosInstance"
 
 const Cart = () => {
 
@@ -36,8 +36,8 @@ const Cart = () => {
 
     try {
       const token = localStorage.getItem("userToken")
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/promos/apply`,
+      const res = await axiosInstance.post(
+        "/api/promos/apply",
         {
           code: promoCode,
           cartTotal: subtotal

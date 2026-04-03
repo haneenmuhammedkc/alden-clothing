@@ -2,6 +2,7 @@ import Admin_Sidebar from "../component/Admin_Sidebar"
 import { FaBars, FaBox, FaShoppingCart, FaUsers, FaRupeeSign } from "react-icons/fa"
 import axios from "axios"
 import React, { useState, useEffect } from "react"
+import axiosInstance from "../utils/axiosInstance"
 
 const Admin_Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -13,8 +14,8 @@ const Admin_Dashboard = () => {
     const fetchRecentOrders = async () => {
       try {
         const token = localStorage.getItem("adminToken")
-        const res = await axios.get(
-          "https://alden-backend-uige.onrender.com/api/admin/auth/recent-orders",
+        const res = await axiosInstance.get(
+          "/api/admin/auth/recent-orders",
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -31,7 +32,7 @@ const Admin_Dashboard = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("adminToken")
-        const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/auth/dashboard-stats", {
+        const res = await axiosInstance.get("/api/admin/auth/dashboard-stats", {
           headers: {
             Authorization: `Bearer ${token}`
           }

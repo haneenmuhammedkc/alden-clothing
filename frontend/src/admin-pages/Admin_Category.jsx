@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import Button from "../component/ui/Button"
+import axiosInstance from "../utils/axiosInstance"
+import React , { useEffect , useState } from "react"
 import Admin_Sidebar from "../component/Admin_Sidebar"
 import { FaBars, FaPlus, FaEdit } from "react-icons/fa"
-import axios from "axios"
-import Button from "../component/ui/Button"
 
 const Admin_Category = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -19,7 +19,7 @@ const Admin_Category = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/categories", {
+      const res = await axiosInstance.get("/api/admin/categories", {
         headers: { Authorization: `Bearer ${token}` }
       })
       setCategories(res.data.data)
@@ -32,14 +32,14 @@ const Admin_Category = () => {
     try {
       const token = localStorage.getItem("adminToken")
       if (editMode) {
-        await axios.put(
-          `https://alden-backend-uige.onrender.com/api/admin/categories/${selectedId}`,
+        await axiosInstance.put(
+          `/api/admin/categories/${selectedId}`,
           newCategory,
           { headers: { Authorization: `Bearer ${token}` } }
         )
       } else {
-        await axios.post(
-          "https://alden-backend-uige.onrender.com/api/admin/categories/add",
+        await axiosInstance.post(
+          "/api/admin/categories/add",
           newCategory,
           { headers: { Authorization: `Bearer ${token}` } }
         )

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import axios from "axios"
+import axiosInstance from "../utils/axiosInstance"
 
 const CartContext = createContext()
 
@@ -22,8 +23,8 @@ export const CartProvider = ({ children }) => {
     const token = localStorage.getItem("userToken")
 
     if(token){
-      axios.post(
-        "https://alden-backend-uige.onrender.com/api/cart/add",
+      axiosInstance.post(
+        "/api/cart/add",
         {items:cartItems},
         {headers:{Authorization:`Bearer ${token}`}}
       )
@@ -90,8 +91,8 @@ export const CartProvider = ({ children }) => {
       const token = localStorage.getItem("userToken")
       try{
         if(token){
-          const res = await axios.get(
-            "https://alden-backend-uige.onrender.com/api/cart",
+          const res = await axiosInstance.get(
+            "/api/cart",
             {headers:{Authorization:`Bearer ${token}`}}
           )
           setCartItems(res.data.items || [])

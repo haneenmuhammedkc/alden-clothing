@@ -4,6 +4,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import Swal from "sweetalert2"
 import { showSuccess, showError, showInfo, showLoading } from "../utils/alerts"
+import axiosInstance from "../utils/axiosInstance"
 
 const Admin_Login = () => {
   const navigate = useNavigate()
@@ -20,8 +21,8 @@ const Admin_Login = () => {
     try {
       setLoading(true)
       showLoading("Authenticating...")
-      const response = await axios.post(
-        "https://alden-backend-uige.onrender.com/api/admin/auth/a-login",
+      const response = await axiosInstance.post(
+        "/api/admin/auth/a-login",
         { email, password }
       )
       Swal.close() // close loading

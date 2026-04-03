@@ -1,7 +1,7 @@
 import React, { useState } from "react"
-import axios from "axios"
 import { showSuccess, showError } from "../utils/alerts"
 import { useNavigate } from "react-router-dom"
+import axiosInstance from "../utils/axiosInstance"
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("")
@@ -18,7 +18,7 @@ const ForgotPassword = () => {
     try {
       setLoading(true)
       setError("")
-      await axios.post("https://alden-backend-uige.onrender.com/api/users/forgot-password", { email })
+      await axiosInstance.post("/api/users/forgot-password", { email })
       showSuccess("OTP Sent", "Check your email")
       navigate("/reset-password", { state: { email } })
     } catch (err) {

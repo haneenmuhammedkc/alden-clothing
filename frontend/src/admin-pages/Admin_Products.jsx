@@ -5,6 +5,7 @@ import { assets } from "../assets/assets"
 import axios from "axios"
 import Button from "../component/ui/Button"
 import Loader from "../component/ui/Loader"
+import axiosInstance from "../utils/axiosInstance"
 
 const Admin_Products = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -73,7 +74,7 @@ const Admin_Products = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("adminToken") // 👈 get JWT
-      const res = await axios.get("https://alden-backend-uige.onrender.com/api/admin/products", {
+      const res = await axiosInstance.get("/api/admin/products", {
         headers: {
           Authorization: `Bearer ${token}`, // 👈 SEND JWT
         },
@@ -122,8 +123,8 @@ const Admin_Products = () => {
   const fetchDeletedProducts = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const res = await axios.get(
-        "https://alden-backend-uige.onrender.com/api/admin/products/deleted",
+      const res = await axiosInstance.get(
+        "/api/admin/products/deleted",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,8 +141,8 @@ const Admin_Products = () => {
   const handleSoftDelete = async (id) => {
     try {
       const token = localStorage.getItem("adminToken")
-      await axios.put(
-        `https://alden-backend-uige.onrender.com/api/admin/products/soft-delete/${id}`,
+      await axiosInstance.put(
+        `/api/admin/products/soft-delete/${id}`,
         {},
         {
           headers: {
@@ -162,8 +163,8 @@ const Admin_Products = () => {
       const token = localStorage.getItem("adminToken")
       const imageUrls = await uploadImagesToCloudinary(selectedImages)
 
-      await axios.post(
-        "https://alden-backend-uige.onrender.com/api/admin/products/add",
+      await axiosInstance.post(
+        "/api/admin/products/add",
         { ...productData, images: imageUrls },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -198,8 +199,8 @@ const Admin_Products = () => {
         images: selectedProduct.images,
       }
 
-      await axios.put(
-        `https://alden-backend-uige.onrender.com/api/admin/products/update/${selectedProduct._id}`,
+      await axiosInstance.put(
+        `/api/admin/products/update/${selectedProduct._id}`,
         updatedData,
         { headers: { Authorization: `Bearer ${token}` } },
       )
@@ -215,8 +216,8 @@ const Admin_Products = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const res = await axios.get(
-        "https://alden-backend-uige.onrender.com/api/admin/categories",
+      const res = await axiosInstance.get(
+        "/api/admin/categories",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -234,8 +235,8 @@ const Admin_Products = () => {
   const handleRestore = async (id) => {
     try {
       const token = localStorage.getItem("adminToken")
-      await axios.put(
-        `https://alden-backend-uige.onrender.com/api/admin/products/restore/${id}`,
+      await axiosInstance.put(
+        `/api/admin/products/restore/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       )

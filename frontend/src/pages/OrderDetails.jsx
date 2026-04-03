@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react"
-import axios from "axios"
 import { useParams, useNavigate } from "react-router-dom"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
@@ -8,6 +7,7 @@ import html2canvas from "html2canvas"
 import Invoice from "../component/Invoice"
 import { motion, AnimatePresence } from "framer-motion"
 import { FiArrowLeft } from "react-icons/fi"
+import axiosInstance from "../utils/axiosInstance"
 
 // Order Timeline Config
 const ORDER_STEPS = [
@@ -84,8 +84,8 @@ const OrderDetails = () => {
     const fetchOrder = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axios.get(
-          `https://alden-backend-uige.onrender.com/api/orders/${id}`,
+        const res = await axiosInstance.get(
+          `/api/orders/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

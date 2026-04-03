@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import axios from "axios"
+import axiosInstance from "../utils/axiosInstance"
 
 const WishlistContext = createContext()
 
@@ -19,8 +20,8 @@ export const WishlistProvider = ({ children }) => {
     const token = localStorage.getItem("userToken")
 
     if(token){
-      axios.post(
-        "https://alden-backend-uige.onrender.com/api/wishlist/add",
+      axiosInstance.post(
+        "/api/wishlist/add",
         {items:wishlistItems},
         {headers:{Authorization:`Bearer ${token}`}}
       )
@@ -45,8 +46,8 @@ export const WishlistProvider = ({ children }) => {
 
       try{
         if(token){
-          const res = await axios.get(
-            "https://alden-backend-uige.onrender.com/api/wishlist",
+          const res = await axiosInstance.get(
+            "/api/wishlist",
             {headers:{Authorization:`Bearer ${token}`}}
           )
 

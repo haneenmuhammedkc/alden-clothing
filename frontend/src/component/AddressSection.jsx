@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useState, useEffect } from "react"
 import { FiPlus, FiEdit2, FiTrash2, FiStar } from "react-icons/fi"
+import axiosInstance from "../utils/axiosInstance"
 
 const AddressSection = () => {
   const [addresses, setAddresses] = useState([])
@@ -24,7 +25,7 @@ const AddressSection = () => {
     const fetchAddresses = async () => {
       try {
         const token = localStorage.getItem("userToken");
-        const res = await axios.get("https://alden-backend-uige.onrender.com/api/users/address", {
+        const res = await axiosInstance.get("/api/users/address", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,8 +63,8 @@ const AddressSection = () => {
       let res
       if (editingAddressId) {
         // UPDATE
-        res = await axios.put(
-          `https://alden-backend-uige.onrender.com/api/users/address/${editingAddressId}`,
+        res = await axiosInstance.put(
+          `/api/users/address/${editingAddressId}`,
           payload,
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -71,8 +72,8 @@ const AddressSection = () => {
         )
       } else {
         // CREATE
-        res = await axios.post(
-          "https://alden-backend-uige.onrender.com/api/users/address",
+        res = await axiosInstance.post(
+          "/api/users/address",
           payload,
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -90,8 +91,8 @@ const AddressSection = () => {
   const setDefault = async (addressId) => {
     try {
       const token = localStorage.getItem("userToken")
-      const res = await axios.put(
-        `https://alden-backend-uige.onrender.com/api/users/address/${addressId}/default`,
+      const res = await axiosInstance.put(
+        `/api/users/address/${addressId}/default`,
         {},
         {
           headers: {
@@ -110,8 +111,8 @@ const AddressSection = () => {
   if (!confirmDelete) return
     try {
       const token = localStorage.getItem("userToken")
-      const res = await axios.delete(
-        `https://alden-backend-uige.onrender.com/api/users/address/${addressId}`,
+      const res = await axiosInstance.delete(
+        `/api/users/address/${addressId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

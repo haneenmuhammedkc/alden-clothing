@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react"
 import { useCart } from "../context/CartContext"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import Swal from "sweetalert2"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, MapPin, CreditCard, Wallet, Plus, CheckCircle2, ShieldCheck, Truck, Tag } from "lucide-react"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
+import axiosInstance from "../utils/axiosInstance"
 
 const Checkout = () => {
   const { cartItems, clearCart, promo, applyPromo, clearPromo } = useCart()
@@ -41,10 +41,10 @@ const Checkout = () => {
         const token = localStorage.getItem("userToken")
         const headers = { Authorization: `Bearer ${token}` }
         
-        const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, { headers })
+        const userRes = await axiosInstance.get("/api/users/me", { headers })
         setUser(userRes.data.user)
 
-        const addrRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/address`, { headers })
+        const addrRes = await axiosInstance.get("/api/users/address", { headers })
         setAddresses(addrRes.data)
         const defaultAddr = addrRes.data.find(addr => addr.isDefault)
         if (defaultAddr) setSelectedAddress(defaultAddr)
@@ -96,7 +96,7 @@ const Checkout = () => {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/orders`, orderData, { headers: { Authorization: `Bearer ${token}` } })
+      const res = await axiosInstance.post("/api/orders", orderData, { headers: { Authorization: `Bearer ${token}` } })
       const order = res.data.data
       if (paymentMethod === "wallet") {
         clearCart()
@@ -114,8 +114,8 @@ const Checkout = () => {
   // Razorpay Payment Handler, Creates Razorpay order via backend and opens payment modal
   const handleRazorpayPayment = async (order) => {
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/payment/razorpay/create-order`,
+      const { data } = await axiosInstance.post(
+        "/api/payment/razorpay/create-order",
         { amount: order.total, orderId: order._id },
         { headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` } }
       )
@@ -144,8 +144,8 @@ const Checkout = () => {
   // Verify Razorpay Payment, Sends payment response to backend for signature verification, clears cart and directs to processing page
   const verifyRazorpayPayment = async (paymentResponse, orderId) => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/payment/razorpay/verify`,
+      await axiosInstance.post(
+        "/api/payment/razorpay/verify",
         { ...paymentResponse, orderId },
         { headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` } }
       )
@@ -160,7 +160,7 @@ const Checkout = () => {
   const applyPromoCheckout = async () => {
     if (!promoCode) return
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/promos/apply`, 
+      const res = await axiosInstance.post("/api/promos/apply", 
         { code: promoCode, cartTotal: subtotal },
         { headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` } }
       )
@@ -188,7 +188,7 @@ const Checkout = () => {
         },
         isDefault: newAddress.isDefault
       }
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/address`, payload, { headers: { Authorization: `Bearer ${token}` } })
+      const res = await axiosInstance.post("/api/users/address", payload, { headers: { Authorization: `Bearer ${token}` } })
       setAddresses(res.data.addresses)
       setSelectedAddress(res.data.addresses[res.data.addresses.length - 1])
       setShowAddressForm(false)

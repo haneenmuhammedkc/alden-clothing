@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import Admin_Sidebar from "../component/Admin_Sidebar"
 import { FaBars, FaRupeeSign, FaShoppingCart, FaChartLine } from "react-icons/fa"
+import axiosInstance from "../utils/axiosInstance"
 
 const Admin_Sales = () => {
 
@@ -15,8 +16,8 @@ const Admin_Sales = () => {
   const fetchSalesReport = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const res = await axios.get(
-        "https://alden-backend-uige.onrender.com/api/orders/sales-report",
+      const res = await axiosInstance.get(
+        "/api/orders/sales-report",
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { fromDate, toDate }
