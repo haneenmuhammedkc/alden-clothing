@@ -1,118 +1,94 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { ChevronRight } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { assets } from "../assets/assets"
+import { Link } from 'react-router-dom'
 
 const Hero = () => {
+  const [isVisible, setIsVisible] = useState(false)
 
-  const containerVars = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { staggerChildren: 0.3, delayChildren: 0.4 } }
-  }
-
-  const itemVars = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0,  transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] } }
-  }
-
-  const bgImage = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop";
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   return (
-    <section className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-[#fafafa] font-['Montserrat',sans-serif]">
-      {/* 1. Background Layer: Slow zoom-out reveal */}
+    <section className="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center font-sans pt-20">
+
+      {/* Background Section */}
       <div className="absolute inset-0 z-0">
-        <motion.div 
-          initial={{ scale: 1.15, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 2.5, ease: "easeOut" }}
-          className="w-full h-full"
-        >
-          <img 
-            src={bgImage} 
-            alt="New Collection" 
-            className="w-full h-full object-cover"
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-black/40 md:bg-transparent md:bg-linear-to-r md:from-black/70 md:via-transparent md:to-transparent"></div>
+
+        {/* Image */}
+        <img src={assets.main_img} alt="Alden Campaign" className="w-full h-full object-cover opacity-60 filter grayscale contrast-125 scale-105"
+          onError={(e) => { e.target.src = 'https://via.placeholder.com/1920x1080?text=Alden+Campaign' }}/>
+        
+        {/* Vignette Effect */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_90%)]"></div>
       </div>
 
-      {/* 2. Content Layer */}
-      <motion.div 
-        variants={containerVars}
-        initial="initial"
-        animate="animate"
-        className="relative z-10 container mx-auto px-6 md:px-12 lg:px-20 h-full flex flex-col justify-center"
-      >
+      {/* Scanning Line */}
+      <div className="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-white/40 to-transparent 
+        shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-[scan_8s_linear_infinite] z-10"></div>
+
+      {/* Content Section */}
+      <div className={`relative z-20 container mx-auto px-6 flex flex-col items-center transition-all duration-1000 
+        transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         
-        {/* Top Tagline */}
-        <motion.div variants={itemVars} className="mb-6">
-          <span className="text-white md:text-black uppercase tracking-[0.5em] text-[10px] font-semibold border-l-2 border-white md:border-black pl-4 py-1">
-            Season Departure — 2026
-          </span>
-        </motion.div>
-
-        {/* Main Heading */}
-        <div className="max-w-4xl overflow-hidden">
-          <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl text-white font-semibold leading-[1.05] tracking-tight mb-10"
-          >
-            <motion.span
-              initial={{ opacity: 0, x: -100 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="block"
-            >
-              ESSENTIALS
-            </motion.span>
-
-            <motion.span
-              initial={{ opacity: 0, x: -120 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="block font-light italic opacity-80"
-            >
-              FOR THE MODERN
-            </motion.span>
-
-            <motion.span
-              initial={{ opacity: 0, x: -140 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="block"
-            >
-              INDIVIDUAL.
-            </motion.span>
-          </motion.h1>
+        {/* Top Element */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="h-px w-6 bg-white/30"></div>
+          <p className="text-xs tracking-widest text-white/80 font-light"> FW / / 2026 / / SIGNATURE SILHOUETTE </p>
+          <div className="h-px w-6 bg-white/30"></div>
         </div>
 
-        {/* Call to Action Buttons */}
-        <motion.div variants={itemVars} className="flex flex-wrap gap-6 items-center">
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-4 bg-black text-white px-10 py-5 text-[11px] font-bold tracking-[0.3em] uppercase transition-all hover:bg-white hover:text-black border border-black shadow-xl"
-          >
-            Discover Men
-            <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
-          </motion.button>
-          
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-4 bg-transparent text-white md:text-black px-10 py-5 text-[11px] font-bold tracking-[0.3em] uppercase border border-white md:border-black transition-all hover:bg-black hover:text-white"
-          >
-            Explore Women
-          </motion.button>
-        </motion.div>
+        {/* Main Text */}
+        <div className="relative group text-center">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl text-white font-bold leading-none mb-4 tracking-tighter">
+            SIGNATURE
+            <br />
+            <span className="relative inline-block text-transparent bg-clip-text bg-linear-to-b from-white to-gray-500">
+              STYLE
+              <span className="absolute -bottom-2 left-0 w-full h-px bg-white/20 origin-left scale-x-0 group-hover:scale-x-100
+                transition-transform duration-700"></span>
+            </span>
+          </h1>          
+        </div>
 
-      </motion.div>
+        {/* Description */}
+        <p className="max-w-md text-gray-400 text-center text-xs tracking-widest leading-loose mb-12 uppercase">
+          Modern heritage, reimagined with precision.
+          <br />
+          Sculpted silhouettes. Intelligent comfort.
+        </p>
 
-      {/* Decorative Frame */}
-      <motion.div 
-        initial={{ opacity: 0, inset: "2rem" }}
-        animate={{ opacity: 1, inset: "1rem" }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="absolute border border-white/20 pointer-events-none z-20"
-      ></motion.div>
+        {/* Buttons ( MEN / WOMEN ) */}
+        <div className="flex flex-col md:flex-row gap-6 items-center">
+          <Link to="/men" className="group relative px-12 py-4 overflow-hidden bg-black transition-all duration-500
+            hover:bg-white text-center">
+            <span className="relative z-10 text-white text-[10px] font-bold tracking-[0.3em] group-hover:text-black transition-all">
+              SHOP MEN
+            </span>
+            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+          </Link>
+
+          <Link to="/women" className="group relative px-12 py-4 overflow-hidden bg-white transition-all duration-500
+            hover:bg-blacktext-center">
+            <span className="relative z-10 text-black text-[10px] font-bold tracking-[0.3em] group-hover:text-white transition-all">
+              SHOP WOMEN
+            </span>
+            <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+          </Link>
+        </div>
+
+        {/* Bottom Coordinates / Branding Decoration */}
+        <div className="mt-20 w-full flex justify-between items-end opacity-20 pointer-events-none px-4 text-[10px] font-mono text-white">
+          <div className="flex flex-col gap-1">
+            <span>LAT: 40.7128° N</span>
+            <span>LNG: 74.0060° W</span>
+          </div>
+          <div className="flex flex-col gap-1 text-right">
+            <span>SYSTEM_BUILD: V.03</span>
+            <span>CORE_PROTOCOL</span>
+          </div>
+        </div>
+      </div>
     </section>
   )
 }
