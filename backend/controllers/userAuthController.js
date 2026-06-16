@@ -42,22 +42,15 @@ export const registerUser = async (req, res) => {
     await User.create({ name, email, phone, password: hashedPassword, emailOtp: otp, emailOtpExpiry: otpExpiry, isVerified: false })
 
     // Send OTP Email
-    // await sendEmail( email,
-    //   "Email Verification OTP",
-    //   ` <h2>Welcome ${name}</h2>
-    //     <p>Your email verification OTP is:</p>
-    //     <h1>${otp}</h1>
-    //     <p>This OTP is valid for 10 minutes.</p> `
-    // )
+    await sendEmail( email,
+      "Email Verification OTP",
+      ` <h2>Welcome ${name}</h2>
+        <p>Your email verification OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 10 minutes.</p> `
+    )
 
-    // res.status(201).json({ success: true, message: "OTP sent to your email. Please verify to continue." })
-
-    console.log("OTP:", otp)
-
-res.status(201).json({
-  success: true,
-  message: "OTP generated"
-})
+    res.status(201).json({ success: true, message: "OTP sent to your email. Please verify to continue." })
 
   }
   catch(error){
