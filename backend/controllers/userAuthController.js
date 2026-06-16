@@ -7,13 +7,13 @@ import admin from "../config/firebaseAdmin.js"
 /* OTP Generator */
 const generateOtp = () => { return Math.floor(100000 + Math.random() * 900000).toString() }
 
-/* Register User */
 export const registerUser = async (req, res) => {
-  try {
+  try{
+    console.log("REGISTER REQUEST:", req.body);
+
     let { name, email, password, phone } = req.body
 
-    // Validate User
-    if (!name || !email || !password){
+    if ( !name || !email || !password || !phone ){
       return res.status(400).json({
         success: false,
         message: "Please fill all required fields"
@@ -42,28 +42,30 @@ export const registerUser = async (req, res) => {
     await User.create({ name, email, phone, password: hashedPassword, emailOtp: otp, emailOtpExpiry: otpExpiry, isVerified: false })
 
     // Send OTP Email
-    await sendEmail( email,
-      "Email Verification OTP",
-      ` <h2>Welcome ${name}</h2>
-        <p>Your email verification OTP is:</p>
-        <h1>${otp}</h1>
-        <p>This OTP is valid for 10 minutes.</p> `
-    )
+    // await sendEmail( email,
+    //   "Email Verification OTP",
+    //   ` <h2>Welcome ${name}</h2>
+    //     <p>Your email verification OTP is:</p>
+    //     <h1>${otp}</h1>
+    //     <p>This OTP is valid for 10 minutes.</p> `
+    // )
 
-    // Response
-    res.status(201).json({
-      success: true,
-      message: "OTP sent to your email. Please verify to continue."
-    })
+    // res.status(201).json({ success: true, message: "OTP sent to your email. Please verify to continue." })
 
-  } catch (error){
-    res.status(500).json({
-      success: false,
-      message: error.message
-    })}
+    console.log("OTP:", otp)
+
+res.status(201).json({
+  success: true,
+  message: "OTP generated"
+})
+
+  }
+  catch(error){
+    console.error("User Registration Error:", error)
+    res.status(500).json({ success: false, message: error.message })
+  }
 }
 
-/* Verify Email OTP */
 export const verifyEmailOtp = async (req, res) => {
   try {
     const { email, otp } = req.body
@@ -107,7 +109,6 @@ export const verifyEmailOtp = async (req, res) => {
     })}
 }
 
-/* User Login */
 export const loginUser = async (req, res) => {
   try {
     let { email, password } = req.body
