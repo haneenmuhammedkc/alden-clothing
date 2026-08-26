@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, Link } from "react-router-dom"
 import { showSuccess, showError } from "../utils/alerts"
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
+import { Eye, EyeOff } from "lucide-react"
 import axiosInstance from "../utils/axiosInstance"
+import Button from "../component/Button"
+import Input from "../component/Input"
 
+/**
+ * ResetPassword — Alden Clothing Timeless Editorial Luxury Reset Password Page
+ */
 const ResetPassword = () => {
   const { state } = useLocation()
   const navigate = useNavigate()
@@ -17,9 +22,11 @@ const ResetPassword = () => {
   const [timer, setTimer] = useState(45)
   const [canResend, setCanResend] = useState(false)
 
-  if (!email) navigate("/forgot-password")
+  useEffect(() => {
+    if (!email) navigate("/forgot-password")
+  }, [email, navigate])
 
-  // OTP Timer
+  // OTP Resend Timer
   useEffect(() => {
     if (timer === 0) {
       setCanResend(true)
@@ -29,13 +36,14 @@ const ResetPassword = () => {
     return () => clearInterval(interval)
   }, [timer])
 
-  // Password Strength
+  // Password Strength Meter
   const getStrength = () => {
     if (newPassword.length < 6) return 20
     if (newPassword.length < 10) return 50
     return 100
   }
 
+  // Password Reset Handler
   const handleReset = async () => {
     try {
       setLoading(true)
@@ -58,61 +66,86 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-100 bg-white rounded-2xl shadow-2xl p-8 space-y-5 animate-fade-in">
-
-        {/* Brand */}
-        <div className="text-center">
-          <p className="text-xs text-gray-400">Secure your account</p>
+    <div className="min-h-screen bg-[#F5EFE8] flex items-center justify-center p-4 sm:p-6 font-sans text-[#30251F]">
+      <div className="w-full max-w-md bg-[#FBF9F6] border border-[#DED4CB] rounded-[16px] p-8 sm:p-10 shadow-sm space-y-6">
+        
+        {/* Brand Editorial Header */}
+        <div className="text-center space-y-1">
+          <Link to="/" className="text-3xl font-serif tracking-tight text-[#30251F] font-normal uppercase">
+            ALDEN CLOTHING
+          </Link>
+          <p className="text-xs uppercase tracking-widest text-[#76675D]">
+            SET NEW PASSWORD
+          </p>
         </div>
 
-        <h2 className="text-2xl font-bold text-center">Reset Password</h2>
-        <p className="text-xs text-center text-gray-500">For: {email}</p>
+        <div className="space-y-4 pt-2">
+          <p className="text-xs text-center text-[#76675D]">
+            Resetting password for <strong className="text-[#30251F]">{email}</strong>
+          </p>
 
-        {/* OTP Input */}
-        <div className="relative">
-          <input value={otp} onChange={(e) => setOtp(e.target.value)}
-            className="peer w-full px-4 pt-5 pb-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
-            placeholder=" " />
-          <label className="absolute left-4 top-2 text-xs text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm transition-all">
-            Enter OTP
-          </label>
+          <Input
+            label="Enter OTP"
+            placeholder="6-digit OTP code"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+
+          <div className="relative">
+            <Input
+              label="New Password"
+              type={showPass ? "text" : "password"}
+              placeholder="Enter new password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPass(!showPass)}
+              className="absolute right-3 top-8 text-[#76675D] hover:text-[#30251F] cursor-pointer"
+            >
+              {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* Password Strength Indicator */}
+          {newPassword && (
+            <div className="space-y-1">
+              <div className="h-1.5 w-full bg-[#DED4CB] rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all ${
+                    getStrength() === 100 ? "bg-[#2D5A27]" : getStrength() === 50 ? "bg-[#8B634B]" : "bg-[#8C2727]"
+                  }`}
+                  style={{ width: `${getStrength()}%` }}
+                />
+              </div>
+              <p className="text-[10px] uppercase text-[#76675D] tracking-wider text-right font-semibold">
+                STRENGTH: {getStrength() === 100 ? "STRONG" : getStrength() === 50 ? "MODERATE" : "WEAK"}
+              </p>
+            </div>
+          )}
+
+          {error && <p className="text-xs text-[#8C2727] text-center font-semibold">{error}</p>}
+
+          <Button
+            variant="primary"
+            fullWidth
+            disabled={loading || !otp || !newPassword}
+            onClick={handleReset}
+            className="h-11"
+          >
+            {loading ? "RESETTING..." : "RESET PASSWORD"}
+          </Button>
+
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => navigate("/login")}
+            className="h-11"
+          >
+            CANCEL & RETURN TO LOGIN
+          </Button>
         </div>
-
-        {/* Password Input */}
-        <div className="relative">
-          <input type={showPass ? "text" : "password"} value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-            className="peer w-full px-4 pt-5 pb-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
-            placeholder=" "/>
-          <label className="absolute left-4 top-2 text-xs text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm transition-all">
-            New Password
-          </label>
-          <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-            {showPass ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-          </button>
-        </div>
-
-        {/* Strength Meter */}
-        <div className="h-1 bg-gray-200 rounded">
-          <div className={`h-full rounded transition-all ${
-            getStrength() === 100 ? "bg-green-500" : getStrength() === 50 ? "bg-yellow-400" : "bg-red-400"}`}
-            style={{ width: `${getStrength()}%` }}/>
-        </div>
-
-        {/* Inline Error */}
-        {error && <p className="text-xs text-red-500">{error}</p>}
-
-        {/* Reset Button */}
-        <button onClick={handleReset} disabled={loading}
-          className="w-full bg-black text-white py-2 rounded-full hover:bg-white hover:text-black hover:border hover:border-black transition-all duration-300 hover:scale-[1.02]">
-          {loading ? "Resetting..." : "Reset Password"}
-        </button>
-
-        {/* Cancel */}
-        <button onClick={() => navigate("/login")}
-          className="w-full border border-black py-2 rounded-full hover:bg-black hover:text-white transition">
-          Cancel
-        </button>
 
       </div>
     </div>

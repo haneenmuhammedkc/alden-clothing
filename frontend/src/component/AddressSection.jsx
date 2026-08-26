@@ -1,8 +1,13 @@
-import axios from "axios"
-import { useState, useEffect } from "react"
-import { FiPlus, FiEdit2, FiTrash2, FiStar } from "react-icons/fi"
+import React, { useState, useEffect } from "react"
+import { Plus, Edit2, Trash2, Star } from "lucide-react"
+import Button from "./Button"
+import Input from "./Input"
+import Select from "./Select"
 import axiosInstance from "../utils/axiosInstance"
 
+/**
+ * AddressSection — Alden Clothing Saved Address Management Component
+ */
 const AddressSection = () => {
   const [addresses, setAddresses] = useState([])
   const [showForm, setShowForm] = useState(false)
@@ -24,19 +29,17 @@ const AddressSection = () => {
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const token = localStorage.getItem("userToken");
+        const token = localStorage.getItem("userToken")
         const res = await axiosInstance.get("/api/users/address", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         })
-        setAddresses(res.data);
-      } catch(error){
+        setAddresses(res.data || [])
+      } catch (error) {
         console.error("Failed to fetch addresses", error)
       }
     }
     fetchAddresses()
-  },[])
+  }, [])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -62,25 +65,19 @@ const AddressSection = () => {
       }
       let res
       if (editingAddressId) {
-        // UPDATE
         res = await axiosInstance.put(
           `/api/users/address/${editingAddressId}`,
           payload,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         )
       } else {
-        // CREATE
         res = await axiosInstance.post(
           "/api/users/address",
           payload,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         )
       }
-      setAddresses(res.data.addresses)
+      setAddresses(res.data.addresses || [])
       setShowForm(false)
       setEditingAddressId(null)
     } catch (error) {
@@ -94,168 +91,218 @@ const AddressSection = () => {
       const res = await axiosInstance.put(
         `/api/users/address/${addressId}/default`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${token}` } }
       )
-      setAddresses(res.data.addresses);
-    } catch(error){
+      setAddresses(res.data.addresses || [])
+    } catch (error) {
       console.error("Failed to set default address", error)
     }
   }
 
   const deleteAddress = async (addressId) => {
-  const confirmDelete = window.confirm( "Are you sure you want to delete this address?" )
-  if (!confirmDelete) return
+    const confirmDelete = window.confirm("Are you sure you want to delete this address?")
+    if (!confirmDelete) return
     try {
       const token = localStorage.getItem("userToken")
       const res = await axiosInstance.delete(
         `/api/users/address/${addressId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
-      setAddresses(res.data.addresses)
-    } catch(error){
+      setAddresses(res.data.addresses || [])
+    } catch (error) {
       console.error("Failed to delete address", error)
     }
   }
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm space-y-6">
-
+    <div className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[12px] p-6 space-y-6 shadow-xs font-sans">
+      
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xs tracking-[0.3em] font-bold text-white uppercase"> Saved Addresses </h2>
-        <button onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 text-sm px-4 py-2 rounded-xl border-white/10 text-[10px] tracking-widest hover:bg-white/5 hover:border-white transition cursor-pointer">
-          <FiPlus /> Add New Address
+      <div className="flex items-center justify-between pb-3 border-b border-[#DED4CB]">
+        <h2 className="text-xs font-bold tracking-wider text-[#30251F] uppercase">SAVED ADDRESSES</h2>
+        <button
+          type="button"
+          onClick={() => {
+            setEditingAddressId(null)
+            setFormData({
+              fullName: "", phone: "", email: "", house: "", area: "",
+              city: "", state: "", pincode: "", landmark: "", addressType: "Home", isDefault: false
+            })
+            setShowForm(!showForm)
+          }}
+          className="flex items-center space-x-1.5 text-xs font-semibold text-[#8B634B] hover:underline uppercase tracking-wider cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>ADD NEW</span>
         </button>
       </div>
 
-      {/* Address Cards */}
-      <div className="w-full flex flex-col gap-2.5">
-        {addresses.map((addr, index) => (
-          <div key={index} className="w-full bg-black/30 border border-white/5 rounded-2xl px-4 py-4 flex justify-between
-            hover:border-white/20 transition-all">
+      {/* Address Cards List */}
+      <div className="space-y-3">
+        {addresses.length === 0 ? (
+          <p className="text-xs text-[#76675D] italic text-center py-4">No saved addresses found.</p>
+        ) : (
+          addresses.map((addr) => (
+            <div
+              key={addr._id}
+              className="bg-[#F5EFE8] border border-[#DED4CB] rounded-[8px] p-4 flex justify-between items-start space-x-4 shadow-2xs"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B634B]">
+                    {addr.addressType || "HOME"}
+                  </span>
+                  {addr.isDefault && (
+                    <span className="flex items-center space-x-1 text-[10px] text-[#2D5A27] font-semibold">
+                      <Star className="w-3 h-3 fill-[#2D5A27]" /> Default
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs font-medium text-[#30251F]">
+                  {addr.firstName} {addr.lastName || ""} • {addr.phone}
+                </p>
+                <p className="text-xs text-[#76675D] leading-relaxed">
+                  {addr.address?.line}, {addr.address?.city}, {addr.address?.state} - {addr.address?.pincode}
+                </p>
+              </div>
 
-            {/* Left content */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <p className="text-[10px] uppercase text-white tracking-wide"> {addr.addressType} </p>
-                {addr.isDefault && (
-                  <span className="flex items-center gap-1 text-xs text-white/60"> <FiStar className="text-xs" /> Default </span>
+              <div className="flex flex-col items-end space-y-2 shrink-0">
+                {!addr.isDefault && (
+                  <button
+                    type="button"
+                    onClick={() => setDefault(addr._id)}
+                    className="text-[10px] font-semibold text-[#76675D] hover:text-[#30251F] underline cursor-pointer"
+                  >
+                    SET AS DEFAULT
+                  </button>
                 )}
-              </div>
-              <p className="text-xs text-gray-300"> {addr.firstName} {addr.lastName || ""} · {addr.phone} </p>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                {addr.address?.line}, {addr.address?.city},<br />
-                {addr.address?.state} - {addr.address?.pincode}
-              </p>
-            </div>
 
-            {/* Right content */}
-            <div className="flex flex-col items-end gap-2 text-gray-400 mt-1">
-              {!addr.isDefault && (
-                <button onClick={() => setDefault(addr._id)} className="text-xs hover:text-white transition cursor-pointer">
-                  Set as default
-                </button>
-              )}
-
-              <div className="flex gap-3">
-                <button onClick={() => { setFormData({
-                      fullName: addr.firstName,
-                      phone: addr.phone,
-                      email: addr.email,
-                      house: addr.address.line.split(",")[0] || "",
-                      area: addr.address.line.split(",")[1] || "",
-                      city: addr.address.city,
-                      state: addr.address.state,
-                      pincode: addr.address.pincode,
-                      landmark: "",
-                      addressType: addr.addressType,
-                      isDefault: addr.isDefault
-                    })
-                    setEditingAddressId(addr._id)
-                    setShowForm(true)
-                  }} className="hover:text-white transition text-sm cursor-pointer">
-                  <FiEdit2 />
-                </button>
-                <button onClick={() => deleteAddress(addr._id)} className="hover:text-red-400 transition text-sm cursor-pointer">
-                  <FiTrash2 />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        fullName: addr.firstName || "",
+                        phone: addr.phone || "",
+                        email: addr.email || "",
+                        house: addr.address?.line?.split(",")?.[0] || "",
+                        area: addr.address?.line?.split(",")?.[1] || "",
+                        city: addr.address?.city || "",
+                        state: addr.address?.state || "",
+                        pincode: addr.address?.pincode || "",
+                        landmark: "",
+                        addressType: addr.addressType || "Home",
+                        isDefault: addr.isDefault
+                      })
+                      setEditingAddressId(addr._id)
+                      setShowForm(true)
+                    }}
+                    className="p-1 text-[#76675D] hover:text-[#30251F] cursor-pointer"
+                    title="Edit Address"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteAddress(addr._id)}
+                    className="p-1 text-[#76675D] hover:text-[#8C2727] cursor-pointer"
+                    title="Delete Address"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* Address Form */}
+      {/* Address Input Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-black/30 border border-white/10 rounded-2xl p-6 space-y-4">
-          <h3 className="text-sm font-semibold">Add New Address</h3>
+        <form onSubmit={handleSubmit} className="bg-[#F5EFE8] border border-[#DED4CB] rounded-[8px] p-4 space-y-3 pt-4">
+          <h3 className="text-xs font-bold uppercase text-[#30251F]">
+            {editingAddressId ? "EDIT ADDRESS" : "ADD NEW ADDRESS"}
+          </h3>
 
-          <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-            focus:outline-none placeholder:text-gray-600" required/>
+          <Input
+            label="Full Name"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            required
+          />
 
-          <div className="grid grid-cols-2 gap-3">
-            <input type="text" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-              focus:outline-none placeholder:text-gray-600" required/>
-
-            <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} 
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-              focus:outline-none placeholder:text-gray-600"/>
+          <div className="grid grid-cols-2 gap-2">
+            <Input
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              label="Email Address"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
           </div>
 
-          <input type="text" name="house" placeholder="House / Building" value={formData.house} onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-            focus:outline-none placeholder:text-gray-600"/>
+          <Input
+            label="House / Flat / Building"
+            name="house"
+            value={formData.house}
+            onChange={handleChange}
+            required
+          />
 
-          <input type="text" name="area" placeholder="Road, Area, Colony" value={formData.area} onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-            focus:outline-none placeholder:text-gray-600"/>
+          <Input
+            label="Road, Area, Colony"
+            name="area"
+            value={formData.area}
+            onChange={handleChange}
+          />
 
-          <div className="grid grid-cols-2 gap-3">
-            <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-              focus:outline-none placeholder:text-gray-600"/>
-
-            <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-              focus:outline-none placeholder:text-gray-600"/>
+          <div className="grid grid-cols-3 gap-2">
+            <Input label="City" name="city" value={formData.city} onChange={handleChange} required />
+            <Input label="State" name="state" value={formData.state} onChange={handleChange} required />
+            <Input label="Pincode" name="pincode" value={formData.pincode} onChange={handleChange} required />
           </div>
 
-          <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-            focus:outline-none placeholder:text-gray-600"/>
+          <div className="flex items-center justify-between pt-2">
+            <Select
+              label="Address Type"
+              name="addressType"
+              value={formData.addressType}
+              onChange={handleChange}
+              options={[
+                { value: "Home", label: "HOME" },
+                { value: "Work", label: "WORK" },
+                { value: "Other", label: "OTHER" }
+              ]}
+            />
 
-          <input type="text" name="landmark" placeholder="Nearby Landmark (optional)" value={formData.landmark}
-            onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white/40
-            focus:outline-none placeholder:text-gray-600"/>
-
-          <div className="flex items-center gap-4 cursor-pointer">
-            <select name="addressType" value={formData.addressType} onChange={handleChange} className="input">
-              <option>Home</option>
-              <option>Work</option>
-              <option>Other</option>
-            </select>
-
-            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-              <input type="checkbox" name="isDefault" checked={formData.isDefault} onChange={handleChange}/>
-              Set as default
+            <label className="flex items-center space-x-2 text-xs text-[#76675D] font-medium cursor-pointer pt-4">
+              <input
+                type="checkbox"
+                name="isDefault"
+                checked={formData.isDefault}
+                onChange={handleChange}
+                className="accent-[#8B634B]"
+              />
+              <span>SET AS DEFAULT</span>
             </label>
           </div>
 
-          <button type="submit" className="w-full py-2 rounded-full border border-white hover:bg-white hover:text-black
-            transition cursor-pointer">
-            Save Address
-          </button>
+          <div className="pt-2 flex justify-end space-x-2">
+            <Button variant="secondary" type="button" onClick={() => setShowForm(false)}>
+              CANCEL
+            </Button>
+            <Button variant="primary" type="submit">
+              SAVE ADDRESS
+            </Button>
+          </div>
         </form>
       )}
     </div>

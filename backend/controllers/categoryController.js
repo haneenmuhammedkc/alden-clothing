@@ -1,53 +1,40 @@
-import Category from "../models/Category.js"
+import {
+  fetchCategories,
+  createCategory,
+  updateCategoryById
+} from "../services/categoryService.js"
 
 export const getCategories = async (req, res) => {
   try {
-    const categories = await Category.find()
-    res.json({ data: categories })
+    const categories = await fetchCategories()
+    return res.json({ success: true, data: categories })
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch categories" })
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: "Failed to fetch categories" })
   }
 }
 
 export const addCategory = async (req, res) => {
   try {
-    const { name, description } = req.body
-
-    if (!name) {
-      return res.status(400).json({ message: "Category name is required" })
-    }
-
-    const exists = await Category.findOne({ name })
-    if (exists) {
-      return res.status(400).json({ message: "Category already exists" })
-    }
-
-    const category = await Category.create({ name, description })
-    res.status(201).json(category)
-
+    const { name, description, status } = req.body
+    const category = await createCategory({ name, description, status })
+    return res.status(201).json({ success: true, category })
   } catch (error) {
     console.error("Add Category Error:", error)
-    res.status(500).json({ message: "Failed to add category" })
+    const statusCode = error.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: error.message || "Failed to add category" })
   }
 }
 
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params
-    const { name, description } = req.body
+    const { name, description, status } = req.body
+    const category = await updateCategoryById(id, { name, description, status })
 
-    const category = await Category.findByIdAndUpdate(
-      id,
-      { name, description },
-      { new: true }
-    )
-
-    if (!category) {
-      return res.status(404).json({ message: "Category not found" })
-    }
-
-    res.json({ message: "Category updated", category })
+    return res.json({ success: true, message: "Category updated", category })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    const statusCode = error.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: error.message })
   }
 }

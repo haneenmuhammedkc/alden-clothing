@@ -1,124 +1,140 @@
 import React, { useEffect, useState } from "react"
-import axios from "axios"
 import Admin_Sidebar from "../component/Admin_Sidebar"
-import { FaBars, FaRupeeSign, FaShoppingCart, FaChartLine } from "react-icons/fa"
+import Button from "../component/Button"
+import Input from "../component/Input"
+import { Menu, DollarSign, ShoppingBag, TrendingUp, Calendar } from "lucide-react"
 import axiosInstance from "../utils/axiosInstance"
 
+/**
+ * Admin_Sales — Alden Clothing Sales Report Workspace
+ */
 const Admin_Sales = () => {
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [salesReport, setSalesReport] = useState([])
   const [summary, setSummary] = useState({ totalRevenue: 0, totalOrders: 0, avgOrderValue: 0 })
   const [fromDate, setFromDate] = useState("")
   const [toDate, setToDate] = useState("")
 
-  // Fetch Sales Report
   const fetchSalesReport = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const res = await axiosInstance.get(
-        "/api/orders/sales-report",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { fromDate, toDate }
-        }
-      )
-      setSalesReport(res.data.report)
-      setSummary(res.data.summary)
-    } catch(error){
+      const res = await axiosInstance.get("/api/orders/sales-report", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { fromDate, toDate }
+      })
+      setSalesReport(res.data.report || [])
+      setSummary(res.data.summary || { totalRevenue: 0, totalOrders: 0, avgOrderValue: 0 })
+    } catch (error) {
       console.error("Sales report error:", error)
     }
   }
+
   useEffect(() => {
     fetchSalesReport()
   }, [])
 
-  // Card Components
-  const Card = ({ icon: Icon, title, value, iconColor }) => (
-    <div className="bg-white shadow-md rounded-xl p-6 flex items-center gap-5">
-      <Icon className={`text-4xl ${iconColor}`} />
+  const KPICard = ({ title, value, icon: IconComponent }) => (
+    <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-5 flex items-center space-x-4 shadow-2xs">
+      <div className="w-10 h-10 rounded-[6px] bg-[#F5EFE8] flex items-center justify-center text-[#8B634B] shrink-0 border border-[#DED4CB]/60">
+        <IconComponent className="w-5 h-5" />
+      </div>
       <div>
-        <p className="text-gray-500 text-sm">{title}</p>
-        <h3 className="text-2xl font-semibold">{value}</h3>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-[#76675D]">{title}</p>
+        <h3 className="text-2xl font-bold text-[#30251F] font-sans">{value}</h3>
       </div>
     </div>
   )
 
   return (
-    <div className="w-full h-screen flex bg-gray-100 overflow-hidden">
-      <Admin_Sidebar />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#30251F] font-sans md:pl-60 flex flex-col selection:bg-[#8B634B] selection:text-white">
+      <Admin_Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
-      {/* Main */}
-      <main className="flex-1 px-4 sm:px-6 md:px-8 py-4 overflow-y-auto ml-27.5">
-
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800"> Sales Report </h2>
-          <FaBars onClick={() => setMobileMenuOpen(true)} className="text-2xl text-gray-600 cursor-pointer md:hidden"/>
-        </div>
-
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <Card icon={FaRupeeSign} iconColor="text-green-500" title="Total Revenue"
-            value={`₹${summary.totalRevenue.toLocaleString()}`}/>
-          <Card icon={FaShoppingCart} iconColor="text-blue-500" title="Total Orders"
-            value={summary.totalOrders}/>
-          <Card icon={FaChartLine} iconColor="text-purple-500" title="Avg Order Value"
-            value={`₹${summary.avgOrderValue.toLocaleString()}`}/>
-        </div>
-
-        {/* Filter Section */}
-        <div className="bg-white p-6 rounded-xl shadow-md mb-8 flex flex-wrap gap-4 items-end">
+      <main className="flex-1 p-6 md:p-8 space-y-6">
+        
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#DED4CB]">
           <div>
-            <label className="text-sm text-gray-500">From</label>
-            <input type="date" className="border rounded-md px-3 py-2 block" value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}/>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#8B634B]">FINANCIAL REVENUE REPORT</span>
+            <h1 className="text-2xl font-bold text-[#30251F] tracking-tight uppercase">SALES REPORT</h1>
           </div>
 
-          <div>
-            <label className="text-sm text-gray-500">To</label>
-            <input type="date" className="border rounded-md px-3 py-2 block" value={toDate}
-              onChange={(e) => setToDate(e.target.value)}/>
-          </div>
-
-          <button onClick={fetchSalesReport} className="bg-black text-white px-5 py-2 rounded-md">
-            Apply Filter
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-[4px] border border-[#DED4CB] text-[#30251F]"
+          >
+            <Menu className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Sales Table */}
-        <div className="bg-white p-6 shadow-md rounded-xl">
-          <h3 className="text-xl font-semibold mb-5">Detailed Sales</h3>
+        {/* 3 KPI Summary Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <KPICard title="TOTAL REVENUE" value={`₹${(summary.totalRevenue || 0).toLocaleString('en-IN')}`} icon={DollarSign} />
+          <KPICard title="TOTAL ORDERS" value={(summary.totalOrders || 0).toLocaleString()} icon={ShoppingBag} />
+          <KPICard title="AVG ORDER VALUE" value={`₹${(summary.avgOrderValue || 0).toLocaleString('en-IN')}`} icon={TrendingUp} />
+        </div>
+
+        {/* Date Filter Bar */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-4 flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 shadow-2xs">
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <span className="text-xs font-semibold text-[#76675D] uppercase">FROM:</span>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="py-1.5 px-3 bg-[#F8FAFC] border border-[#DED4CB] rounded-[4px] text-xs text-[#30251F] focus:outline-none focus:border-[#8B634B]"
+            />
+          </div>
+
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <span className="text-xs font-semibold text-[#76675D] uppercase">TO:</span>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="py-1.5 px-3 bg-[#F8FAFC] border border-[#DED4CB] rounded-[4px] text-xs text-[#30251F] focus:outline-none focus:border-[#8B634B]"
+            />
+          </div>
+
+          <Button variant="primary" onClick={fetchSalesReport} className="text-xs">
+            APPLY FILTER
+          </Button>
+        </div>
+
+        {/* Detailed Sales Data Table */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-6 space-y-4 shadow-2xs">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#30251F] pb-2 border-b border-[#DED4CB]">
+            ITEMIZED SALES REPORT
+          </h2>
+
           <div className="overflow-x-auto">
-            <table className="w-full min-w-150 text-left">
-              <thead className="border-b text-gray-500">
-                <tr>
-                  <th className="py-3">Date</th>
-                  <th className="py-3">Orders</th>
-                  <th className="py-3">Total Sales</th>
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[#DED4CB] text-[#76675D] font-bold uppercase">
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">Orders Count</th>
+                  <th className="py-2.5 px-3 text-right">Total Revenue Sales</th>
                 </tr>
               </thead>
-
-              <tbody>
+              <tbody className="divide-y divide-[#DED4CB]/60 text-[#30251F]">
                 {salesReport.length > 0 ? (
-                  salesReport.map((item, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="py-3"> {item.date} </td>
-                      <td className="py-3"> {item.orders} </td>
-                      <td className="py-3 font-semibold text-green-600"> ₹{item.totalSales.toLocaleString()} </td>
+                  salesReport.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-[#F8FAFC]">
+                      <td className="py-3 px-3 font-semibold text-[#30251F]">{row._id}</td>
+                      <td className="py-3 px-3 font-medium text-[#76675D]">{row.count || row.orders} orders</td>
+                      <td className="py-3 px-3 font-bold text-right text-[#8B634B]">₹{(row.totalSales || row.sales || 0).toLocaleString('en-IN')}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="3" className="py-4 text-center text-gray-400"> No sales data </td>
+                    <td colSpan="3" className="py-6 text-center text-[#76675D] italic">No sales records for selected range.</td>
                   </tr>
                 )}
               </tbody>
-
             </table>
           </div>
-
         </div>
+
       </main>
     </div>
   )

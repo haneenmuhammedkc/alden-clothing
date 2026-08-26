@@ -1,9 +1,8 @@
-import { BrowserRouter as Router, useNavigate, NavLink, useLocation } from "react-router-dom"
-import { assets } from "../assets/assets"
+import { useNavigate, NavLink, useLocation } from "react-router-dom"
 import { useWishlist } from "../context/WishlistContext"
 import { useCart } from "../context/CartContext"
 import { useState, useEffect, useRef } from "react"
-import { User, Heart, ShoppingBag } from "lucide-react"
+import { User, Heart, ShoppingBag, Search, Menu, X } from "lucide-react"
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -13,6 +12,7 @@ const Navbar = () => {
   const debounceRef = useRef(null)
 
   const [searchQuery, setSearchQuery] = useState("")
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Reads search query from URL and puts it back into search input
   useEffect(() => {
@@ -25,46 +25,58 @@ const Navbar = () => {
   const showSearch =
     location.pathname === "/men" ||
     location.pathname === "/women" ||
-    location.pathname === "/kids"
+    location.pathname === "/kids" ||
+    location.pathname === "/shop"
 
   const handleProfileClick = () => {
     const token = localStorage.getItem("userToken")
-    if(token){
+    if (token) {
       navigate("/profile")
-    } else{
+    } else {
       navigate("/login")
     }
   }
 
+  const navLinks = [
+    { label: "HOME", path: "/" },
+    { label: "MEN", path: "/men" },
+    { label: "WOMEN", path: "/women" },
+    { label: "KIDS", path: "/kids" },
+    { label: "COLLECTIONS", path: "/men" }
+  ]
+
   return (
-    <div className="fixed top-0 left-0 w-full z-50 flex justify-center p-4 transform transition-all duration-300 ease-out hover:scale-[1.01]">
-      <nav className="relative w-full max-w-7xl h-17 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-between px-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-1/2 h-px bg-linear-to-r from-transparent via-white/30 to-transparent"></div>
-
-        {/* Left Section */}
-        <div className="flex items-center gap-12">
-
-          {/* Logo */}
-          <div className="flex items-center cursor-pointer group" onClick={() => navigate("/")}>
-            <img className="h-5" src={assets.logo} alt="ALDEN" />
+    <header className="sticky top-0 z-50 bg-[#F5EFE8] border-b border-[#DED4CB] w-full font-sans transition-colors duration-200">
+      <nav className="max-w-[1320px] mx-auto h-20 px-4 md:px-8 flex items-center justify-between">
+        
+        {/* LEFT SECTION: Brand Wordmark */}
+        <div className="flex items-center gap-10">
+          <div 
+            className="flex items-center cursor-pointer select-none" 
+            onClick={() => navigate("/")}
+          >
+            <span className="text-xl font-bold tracking-tight text-[#30251F] font-sans">
+              ALDEN
+            </span>
           </div>
           
-          {/* Category */}
-          <ul className="hidden md:flex gap-10 text-[10px] uppercase tracking-[0.2em] font-medium">
-            {["Home", "Men", "Women", "Kids"].map((item) => (
-              <li key={item}>
+          {/* CENTER SECTION: Navigation Links */}
+          <ul className="hidden md:flex items-center gap-8 text-xs uppercase tracking-wider font-semibold">
+            {navLinks.map((item) => (
+              <li key={item.label}>
                 <NavLink 
-                  to={item === "Home" ? "/" : `/${item.toLowerCase()}`} 
+                  to={item.path} 
+                  end={item.path === "/"}
                   className={({ isActive }) => `
-                    relative py-2 transition-all duration-300
-                    ${isActive ? "text-white" : "text-white/40 hover:text-white/80"}
+                    relative py-1 transition-colors duration-150
+                    ${isActive ? "text-[#30251F]" : "text-[#76675D] hover:text-[#30251F]"}
                   `}
                 >
                   {({ isActive }) => (
                     <>
-                      {item}
+                      {item.label}
                       {isActive && (
-                        <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)] rounded-full animate-pulse"></span>
+                        <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#8B634B] rounded-full"></span>
                       )}
                     </>
                   )}
@@ -74,13 +86,19 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* Right Section */}
-        <div className="flex items-center gap-5">
+        {/* RIGHT SECTION: Search & Icon Controls */}
+        <div className="flex items-center gap-5 text-[#30251F]">
 
-          {/* Search Bar */}
+          {/* Search Input Field */}
           {showSearch && (
-            <div className="relative group flex items-center">
-              <input type="text" placeholder="DISCOVER..." value={searchQuery} onChange={(e) => { const value = e.target.value
+            <div className="relative flex items-center bg-[#FBF9F6] border border-[#DED4CB] rounded-[6px] px-3 py-1.5 w-36 focus-within:w-52 transition-all duration-200">
+              <Search className="w-3.5 h-3.5 text-[#76675D] mr-2 shrink-0" />
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                value={searchQuery} 
+                onChange={(e) => {
+                  const value = e.target.value
                   setSearchQuery(value)
                   if (debounceRef.current) clearTimeout(debounceRef.current)
                   debounceRef.current = setTimeout(() => {
@@ -88,44 +106,80 @@ const Navbar = () => {
                     navigate(trimmed ? `${location.pathname}?search=${encodeURIComponent(trimmed)}` : location.pathname, { replace: true })
                   }, 300)
                 }}
-                className="w-32 focus:w-48 h-8 bg-white/5 border border-white/10 rounded-lg px-3 text-[10px] text-white tracking-widest
-                placeholder:text-white/20 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all duration-500 ease-in-out"/>
+                className="w-full bg-transparent text-xs text-[#30251F] placeholder-[#76675D]/60 focus:outline-none"
+              />
             </div>
           )}
 
-          <div className="flex items-center gap-6 border-l border-white/10 pl-5 ml-2">
+          <div className="flex items-center gap-4">
 
-            {/* Profile */}
-            <button onClick={handleProfileClick} className="text-white/60 hover:text-white transition-all duration-300 cursor-pointer">
+            {/* Profile Menu Trigger */}
+            <button 
+              onClick={handleProfileClick} 
+              className="p-1.5 text-[#30251F] hover:text-[#8B634B] transition-colors cursor-pointer"
+              aria-label="Account"
+            >
               <User className="h-5 w-5" />
             </button>
 
-            {/* Wishlist */}
-            <button onClick={() => navigate("/wishlist")} className="group relative text-white/60 hover:text-white transition-all duration-300 cursor-pointer">
+            {/* Wishlist Trigger */}
+            <button 
+              onClick={() => navigate("/wishlist")} 
+              className="relative p-1.5 text-[#30251F] hover:text-[#8B634B] transition-colors cursor-pointer"
+              aria-label="Wishlist"
+            >
               <Heart className="h-5 w-5" />
               {wishlistItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-white text-[7px] text-black font-bold items-center justify-center shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                    {wishlistItems.length}
-                  </span>
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 bg-[#B7A08D] text-[#30251F] text-[10px] font-bold rounded-full items-center justify-center">
+                  {wishlistItems.length}
                 </span>
               )}
             </button>
 
-            {/* Cart */}
-            <button onClick={() => navigate("/cart")} className="group relative text-white/60 hover:text-white transition-all duration-300 cursor-pointer">
+            {/* Cart Trigger */}
+            <button 
+              onClick={() => navigate("/cart")} 
+              className="relative p-1.5 text-[#30251F] hover:text-[#8B634B] transition-colors cursor-pointer"
+              aria-label="Shopping Cart"
+            >
               <ShoppingBag className="h-5 w-5" />
               {cartItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-white text-black text-[8px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+                <span className="absolute -top-1 -right-1 bg-[#8B634B] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                   {cartItems.length}
                 </span>
               )}
             </button>
 
+            {/* Mobile Hamburger Menu Trigger */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-1.5 text-[#30251F] cursor-pointer"
+              aria-label="Open menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+
           </div>
         </div>
+
       </nav>
-    </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-[#F5EFE8] border-b border-[#DED4CB] px-6 py-4 space-y-3 font-sans">
+          {navLinks.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
+              className="block w-full text-left py-2 text-xs font-bold uppercase text-[#30251F] border-b border-[#DED4CB] hover:text-[#8B634B] transition-colors"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </header>
   )
 }
 

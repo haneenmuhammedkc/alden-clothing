@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react"
 import Admin_Sidebar from "../component/Admin_Sidebar"
-import { FaBars, FaCheckCircle, FaEye } from "react-icons/fa"
+import Badge from "../component/Badge"
+import Button from "../component/Button"
+import Modal from "../component/Modal"
+import { Menu, CheckCircle, Eye } from "lucide-react"
 import axios from "axios"
 
+/**
+ * Admin_Reports — Alden Clothing Customer Feedback Moderation Workspace
+ */
 const Admin_Reports = () => {
-  
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [feedbacks, setFeedbacks] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedFeedback, setSelectedFeedback] = useState(null)
@@ -21,10 +27,9 @@ const Admin_Reports = () => {
       const res = await axios.get(`${API}/api/admin/feedback`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      setFeedbacks(res.data.data)
+      setFeedbacks(res.data.data || [])
     } catch (err) {
       console.error("Failed to fetch feedbacks", err)
-      alert("Failed to load feedbacks")
     } finally {
       setLoading(false)
     }
@@ -44,123 +49,131 @@ const Admin_Reports = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex bg-gray-100 pl-27.5">
-      <Admin_Sidebar />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#30251F] font-sans md:pl-60 flex flex-col selection:bg-[#8B634B] selection:text-white">
+      <Admin_Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
-      <main className="flex-1 px-6 py-6">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">Customer Feedbacks & Reports</h2>
-          <FaBars className="text-2xl md:hidden" />
+      <main className="flex-1 p-6 md:p-8 space-y-6">
+        
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#DED4CB]">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#8B634B]">MODERATION & REVIEWS</span>
+            <h1 className="text-2xl font-bold text-[#30251F] tracking-tight uppercase">FEEDBACK & REPORTS</h1>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-[4px] border border-[#DED4CB] text-[#30251F]"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-xl shadow p-5 overflow-x-auto">
-          {loading ? (
-            <p className="text-center py-10 text-gray-400">Loading feedbacks...</p>
-          ) : (
-            <table className="w-full min-w-225 text-left text-sm">
+        {/* Feedback Data Table Panel */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-6 space-y-4 shadow-2xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
               <thead>
-                <tr className="text-gray-600">
-                  <th>User</th>
-                  <th>Product</th>
-                  <th>Details</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                <tr className="border-b border-[#DED4CB] text-[#76675D] font-bold uppercase">
+                  <th className="py-2.5 px-3">User</th>
+                  <th className="py-2.5 px-3">Product</th>
+                  <th className="py-2.5 px-3">Rating & Message</th>
+                  <th className="py-2.5 px-3">Status</th>
+                  <th className="py-2.5 px-3 text-right">Actions</th>
                 </tr>
               </thead>
-
-              <tbody>
-                {feedbacks.map(fb => (
-                  <tr key={fb._id} className="border-b border-black/20 hover:bg-gray-50">
-                    {/* User */}
-                    <td className="py-3">
-                      <p className="font-medium">{fb.user?.firstName || "User"}</p>
-                      <p className="text-xs text-gray-400">{fb.user?.email}</p>
-                    </td>
-
-                    {/* Product */}
-                    <td>
-                      <p className="font-medium">{fb.product?.name || "Product"}</p>
-                      <p className="text-xs text-gray-400 capitalize">{fb.type}</p>
-                    </td>
-
-                    {/* Details */}
-                    <td>
-                      <p className="text-yellow-500 text-xs"> {"★".repeat(fb.rating || 0)}{"☆".repeat(5 - (fb.rating || 0))} </p>
-                      <p className="max-w-62.5 truncate text-gray-600"> {fb.message} </p>
-                    </td>
-
-                    {/* Status */}
-                    <td >
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        fb.status === "pending"
-                          ? "bg-orange-100 text-orange-600"
-                          : "bg-green-100 text-green-600"
-                        }`} >
-                        {fb.status}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="flex gap-3 pt-4.5">
-                      <button onClick={() => setSelectedFeedback(fb)} className="text-lg text-blue-600 hover:text-blue-800"
-                        title="View" >
-                        <FaEye />
-                      </button>
-
-                      {fb.status === "pending" && (
-                        <button onClick={() => resolveFeedback(fb._id)} className="text-md text-green-600 hover:text-green-800"
-                          title="Resolve" >
-                          <FaCheckCircle />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-
-                {feedbacks.length === 0 && (
+              <tbody className="divide-y divide-[#DED4CB]/60 text-[#30251F]">
+                {loading ? (
                   <tr>
-                    <td colSpan="5" className="text-center py-10 text-gray-400"> No feedbacks found </td>
+                    <td colSpan="5" className="py-6 text-center text-[#76675D] italic">Loading feedback reports...</td>
+                  </tr>
+                ) : feedbacks.length > 0 ? (
+                  feedbacks.map((fb) => (
+                    <tr key={fb._id} className="hover:bg-[#F8FAFC]">
+                      <td className="py-3 px-3 font-semibold text-[#30251F]">
+                        {fb.user?.firstName || "Verified User"}
+                        <span className="block text-[11px] text-[#76675D] font-normal">{fb.user?.email}</span>
+                      </td>
+                      <td className="py-3 px-3 font-medium">
+                        {fb.product?.name || "Product Catalog Item"}
+                        <span className="block text-[11px] text-[#76675D] uppercase">{fb.type}</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="text-[#8B634B] font-bold text-xs pb-0.5">
+                          {"★".repeat(fb.rating || 0)}{"☆".repeat(5 - (fb.rating || 0))}
+                        </div>
+                        <p className="text-[#76675D] max-w-xs truncate">{fb.message}</p>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge variant={fb.status === "pending" ? "warning" : "success"}>
+                          {(fb.status || "PENDING").toUpperCase()}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedFeedback(fb)}
+                            className="p-1.5 text-[#8B634B] hover:bg-[#F5EFE8] rounded-[4px] cursor-pointer"
+                            title="View Feedback Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          {fb.status === "pending" && (
+                            <button
+                              type="button"
+                              onClick={() => resolveFeedback(fb._id)}
+                              className="p-1.5 text-[#2D5A27] hover:bg-[#E8F2E6] rounded-[4px] cursor-pointer"
+                              title="Resolve Feedback"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="py-6 text-center text-[#76675D] italic">No feedback submissions found.</td>
                   </tr>
                 )}
               </tbody>
             </table>
-          )}
-        </div>
-      </main>
-
-      {/* View Modal */}
-      {selectedFeedback && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] max-w-md rounded-lg shadow-lg p-6 relative">
-            <h3 className="text-xl font-semibold mb-4">Feedback Details</h3>
-
-            <div className="space-y-2 text-sm">
-              <p><b>User:</b> {selectedFeedback.user?.firstName}</p>
-              <p><b>Product:</b> {selectedFeedback.product?.name}</p>
-              <p><b>Type:</b> {selectedFeedback.type}</p>
-              <p><b>Rating:</b> {selectedFeedback.rating || "-"}</p>
-              <p><b>Status:</b> {selectedFeedback.status}</p>
-              <p><b>Message:</b></p>
-              <p className="text-gray-600 border p-2 rounded">
-                {selectedFeedback.message}
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-5">
-              {selectedFeedback.status === "pending" && (
-                <button onClick={() => resolveFeedback(selectedFeedback._id)} className="px-4 py-1 bg-green-600 text-white rounded text-sm">
-                  Mark Resolved
-                </button>
-              )}
-              <button onClick={() => setSelectedFeedback(null)} className="px-4 py-1 border rounded text-sm">
-                Close
-              </button>
-            </div>
           </div>
         </div>
-      )}
+
+      </main>
+
+      {/* View Feedback Modal */}
+      <Modal
+        isOpen={!!selectedFeedback}
+        onClose={() => setSelectedFeedback(null)}
+        title="FEEDBACK REPORT DETAIL"
+      >
+        {selectedFeedback && (
+          <div className="space-y-3 font-sans text-xs">
+            <div className="bg-[#F5EFE8] p-3 rounded-[6px] border border-[#DED4CB] space-y-1">
+              <p className="font-bold text-[#30251F]">{selectedFeedback.user?.firstName} ({selectedFeedback.user?.email})</p>
+              <p className="text-[#76675D]">TARGET PRODUCT: {selectedFeedback.product?.name}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-bold uppercase text-[#30251F]">RATING & SUBMISSION</p>
+              <p className="text-[#8B634B] font-bold">{"★".repeat(selectedFeedback.rating || 0)}</p>
+              <p className="text-[#76675D] leading-relaxed">"{selectedFeedback.message}"</p>
+            </div>
+            <div className="pt-3 flex justify-end space-x-2">
+              {selectedFeedback.status === "pending" && (
+                <Button variant="primary" onClick={() => resolveFeedback(selectedFeedback._id)}>
+                  MARK AS RESOLVED
+                </Button>
+              )}
+              <Button variant="secondary" onClick={() => setSelectedFeedback(null)}>DISMISS</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

@@ -1,21 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
-import { motion, AnimatePresence } from "framer-motion"
-import { Package, Clock, Truck, CheckCircle2, XCircle } from "lucide-react"
-import { FiArrowLeft } from "react-icons/fi"
+import Badge from "../component/Badge"
+import Button from "../component/Button"
+import { Package, Clock, Truck, CheckCircle2, XCircle, ArrowLeft } from "lucide-react"
 import axiosInstance from "../utils/axiosInstance"
 
-// Associates each order status with its corresponding icon
 const statusConfig = {
-  pending: { icon: Clock },
-  processing: { icon: Package },
-  shipped: { icon: Truck },
-  delivered: { icon: CheckCircle2 },
-  cancelled: { icon: XCircle }
+  pending: { icon: Clock, variant: "warning" },
+  processing: { icon: Package, variant: "info" },
+  shipped: { icon: Truck, variant: "info" },
+  delivered: { icon: CheckCircle2, variant: "success" },
+  cancelled: { icon: XCircle, variant: "danger" }
 }
 
+/**
+ * MyOrders — Alden Clothing Timeless Editorial Luxury Customer Orders Workspace
+ */
 const MyOrders = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,27 +27,23 @@ const MyOrders = () => {
 
   const navigate = useNavigate()
 
-  // Fetch logged-in user's orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("userToken")
         const res = await axiosInstance.get("/api/orders/my", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         })
-        setOrders(res.data.data)
-      }catch(error){
+        setOrders(res.data.data || [])
+      } catch (error) {
         console.error("Fetch Orders Error:", error)
-      }finally{
+      } finally {
         setLoading(false)
       }
     }
     fetchOrders()
   }, [])
 
-  // Search, Status and Sort
   const filteredOrders = useMemo(() => {
     const processed = orders
       .map((order) => {
@@ -73,18 +71,13 @@ const MyOrders = () => {
     return processed
   }, [orders, searchTerm, selectedStatus, sortOrder])
 
-  // Cancel a specific order
   const handleCancelOrder = async (orderId) => {
     try {
       const token = localStorage.getItem("userToken")
       await axiosInstance.put(
         `/api/orders/${orderId}/cancel`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       setOrders((prev) =>
         prev.map((order) =>
@@ -97,150 +90,154 @@ const MyOrders = () => {
   }
 
   return (
-    <>
+    <div className="bg-[#F5EFE8] min-h-screen text-[#30251F] font-sans selection:bg-[#8B634B] selection:text-white">
       <Navbar />
 
-      <div className="max-w-8xl mx-auto px-20 pt-30 pb-32">
+      <main className="max-w-[1320px] mx-auto px-4 md:px-8 py-12">
+        
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-6 border-b border-[#DED4CB]">
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => navigate("/profile")}
+              className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-[#76675D] hover:text-[#30251F] transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>ACCOUNT DASHBOARD</span>
+            </button>
 
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative mb-5">
-          <div className="flex items-start gap-6">
-            <motion.button whileHover={{ x: -5 }} onClick={() => navigate("/profile")}
-              className="p-3 border border-black rounded-full cursor-pointer hover:bg-black/5 hover:text-black transition-all">
-              <FiArrowLeft />
-            </motion.button>
-            <div>
-              <h1 className="text-4xl md:text-4xl font-black tracking-tighter uppercase leading-none">
-                Order <span className="text-gray-500">List</span>
-              </h1>
-            </div>
+            <h1 className="text-3xl sm:text-4xl font-serif font-normal text-[#30251F]">
+              MY ORDER HISTORY ({orders.length})
+            </h1>
           </div>
-        </motion.div>
 
-        <div className="flex flex-wrap items-center gap-3 mb-10">
+          {/* Controls: Search, Sort, Filter */}
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="text"
+              placeholder="SEARCH ORDERS..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="h-10 px-3 bg-[#FBF9F6] border border-[#DED4CB] rounded-[4px] text-xs uppercase text-[#30251F] placeholder-[#76675D]/60 focus:outline-none focus:border-[#8B634B]"
+            />
 
-          {/* Search */}
-          <input type="text" placeholder="Search your orders here" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-transparent border-b border-black/10 py-4 font-mono text-sm focus:outline-none"/>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="h-10 px-3 bg-[#FBF9F6] border border-[#DED4CB] rounded-[4px] text-xs uppercase font-semibold text-[#30251F] focus:outline-none focus:border-[#8B634B]"
+            >
+              <option value="newest">NEWEST FIRST</option>
+              <option value="oldest">OLDEST FIRST</option>
+            </select>
 
-          {/* Sort */}
-          <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}
-            className="bg-transparent border border-black/10 px-8 py-4 text-[10px] font-mono uppercase tracking-widest">
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-          </select>
-
-          {/* Status Filter */}
-          <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-transparent border border-black/10 px-8 py-4 text-[10px] font-mono uppercase tracking-widest">
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="h-10 px-3 bg-[#FBF9F6] border border-[#DED4CB] rounded-[4px] text-xs uppercase font-semibold text-[#30251F] focus:outline-none focus:border-[#8B634B]"
+            >
+              <option value="all">ALL STATUS</option>
+              <option value="pending">PENDING</option>
+              <option value="processing">PROCESSING</option>
+              <option value="shipped">SHIPPED</option>
+              <option value="delivered">DELIVERED</option>
+              <option value="cancelled">CANCELLED</option>
+            </select>
+          </div>
         </div>
 
-        {/* Orders */}
+        {/* Orders Listing */}
         {loading ? (
-          <p className="text-gray-500">Loading orders...</p>
+          <div className="flex flex-col items-center justify-center py-24 space-y-3">
+            <div className="w-8 h-8 border-2 border-[#DED4CB] border-t-[#8B634B] rounded-full animate-spin" />
+            <p className="text-xs uppercase tracking-widest text-[#76675D]">Loading Orders...</p>
+          </div>
         ) : filteredOrders.length === 0 ? (
-          <p className="text-gray-500">No orders match your search.</p>
+          <div className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[12px] p-12 text-center space-y-4 max-w-lg mx-auto">
+            <Package className="w-12 h-12 text-[#76675D] mx-auto" />
+            <h2 className="text-xl font-serif text-[#30251F]">NO ORDERS FOUND</h2>
+            <p className="text-xs text-[#76675D]">No orders match your search or selected status filter.</p>
+            <div className="pt-2">
+              <Button variant="primary" onClick={() => navigate("/men")}>EXPLORE CATALOG</Button>
+            </div>
+          </div>
         ) : (
-          <div className="space-y-5">
-            <AnimatePresence mode="popLayout">
+          <div className="space-y-4">
             {filteredOrders.map((order) => {
-              const status = statusConfig[order.orderStatus]
-              const StatusIcon = status?.icon || Package
-
-              const previewItem = order.items?.[0]
-              const itemNames = order.items.map(item => item.name).join(", ")
+              const status = statusConfig[order.orderStatus] || statusConfig.pending
               const shortId = order._id.slice(-6).toUpperCase()
-              const orderDate = new Date(order.createdAt).toLocaleDateString()
+              const orderDate = new Date(order.createdAt).toLocaleDateString("en-IN", {
+                day: "numeric", month: "short", year: "numeric"
+              })
 
               return (
-                <motion.div key={order._id} layout initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98 }} whileHover={{ y: -2 }} onClick={() => navigate(`/orders/${order._id}`)}
-                  className="group relative bg-white border border-black/5 rounded-2xl p-6 cursor-pointer
-                  hover:shadow-xl transition-all duration-300">
-
-                  {/* Top Order Detail Section */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-black/40">
-                      <span>Order #{shortId}</span>
-                      <span>•</span>
-                      <span>{orderDate}</span>
+                <div
+                  key={order._id}
+                  onClick={() => navigate(`/orders/${order._id}`)}
+                  className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[10px] p-6 space-y-4 shadow-xs hover:border-[#8B634B] transition-all cursor-pointer"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#DED4CB]/60">
+                    <div className="flex items-center space-x-3 text-xs font-semibold text-[#30251F]">
+                      <span className="text-[#8B634B]">ORDER #{shortId}</span>
+                      <span className="text-[#DED4CB]">•</span>
+                      <span className="text-[#76675D]">{orderDate}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-black/40">
-                      <StatusIcon size={14}/> {order.orderStatus}
+
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={status.variant}>
+                        {order.orderStatus.toUpperCase()}
+                      </Badge>
                     </div>
                   </div>
 
-                  {/* MAIN CONTENT */}
-                  <div className="flex items-center gap-6">
-
-                    {/* Image Section */}
-                    <div className="relative w-24 h-28">
-                      
-                      {/* Back Image */}
-                      {order.items[1] && (
-                        <img src={order.items[1].image} alt="preview-back" className="absolute top-1.5 left-1.5 w-full h-full
-                          object-cover rounded-xl border border-black/10 bg-gray-50 opacity-80 scale-[0.96]"/>
-                      )}
-
-                      {/* Front Image */}
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <div className="w-20 h-24 bg-[#F5EFE8] rounded-[6px] overflow-hidden border border-[#DED4CB]/60 shrink-0">
                       {order.items[0] && (
-                        <img src={order.items[0].image} alt={order.items[0].name} className="relative w-full h-full object-cover
-                          rounded-xl border border-black/10 bg-gray-50 transition-all duration-500 group-hover:-translate-y-1 group-hover:scale-105"/>
+                        <img src={order.items[0].image} alt={order.items[0].name} className="w-full h-full object-cover" />
                       )}
                     </div>
 
-                    {/* Info */}
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold uppercase tracking-wide leading-snug">
-                        {itemNames}
+                    <div className="flex-1 text-center sm:text-left space-y-1">
+                      <p className="text-sm font-semibold text-[#30251F]">
+                        {order.items.map(i => i.name).join(", ")}
                       </p>
+                      <p className="text-xs text-[#76675D]">
+                        {order.items.length} ITEM(S) • VIA {order.paymentMethod?.toUpperCase()}
+                      </p>
+                      <p className="text-base font-bold text-[#8B634B] pt-1">
+                        ₹{(order.total || 0).toLocaleString('en-IN')}
+                      </p>
+                    </div>
 
-                      {/* Item Count Badge */}
-                      <div className="flex items-center gap-3 mt-2 flex-wrap">
-                        {order.items.length > 1 && (
-                          <span className="text-[10px] px-2 py-1 border border-black/10 rounded-full font-mono uppercase">
-                            {order.items.length} items
-                          </span>
-                        )}
-                        <span className="text-[10px] px-2 py-1 border border-black/10 rounded-full font-mono uppercase">
-                          {order.paymentMethod}
-                        </span>
-                      </div>
-                      <p className="text-lg font-bold italic mt-3"> ₹ {order.total} </p>
+                    <div className="flex items-center space-x-3">
+                      {["pending", "processing", "shipped"].includes(order.orderStatus) && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleCancelOrder(order._id)
+                          }}
+                          className="px-3 py-1.5 border border-[#8C2727] text-[#8C2727] text-xs font-semibold rounded-[4px] hover:bg-[#8C2727] hover:text-white transition-colors cursor-pointer"
+                        >
+                          CANCEL ORDER
+                        </button>
+                      )}
+                      
+                      <Button variant="secondary" className="text-xs">
+                        VIEW DETAILS
+                      </Button>
                     </div>
                   </div>
-
-                  {/* Action Bar */}
-                  <div className="flex justify-between items-center mt-6 pt-4 border-t border-black/5">
-                    <p className="text-[10px] font-mono uppercase text-black/40"> Tap to view full order details </p>
-
-                    {["pending","processing","shipped"].includes(order.orderStatus) && (
-                      <button onClick={(e)=>{
-                          e.stopPropagation()
-                          handleCancelOrder(order._id)
-                        }}
-                        className="text-xs border border-red-400 text-red-600 rounded-md px-3 py-1
-                        hover:bg-red-50 transition-all">
-                        Cancel
-                      </button>
-                    )}
-                  </div>
-                </motion.div>
+                </div>
               )
             })}
-            </AnimatePresence>
           </div>
         )}
-      </div>
+
+      </main>
+
       <Footer />
-    </>
+    </div>
   )
 }
 

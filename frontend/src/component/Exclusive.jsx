@@ -1,76 +1,60 @@
 import React from 'react'
-import { assets } from '../assets/assets'
 import { useNavigate } from "react-router-dom"
+import { assets } from '../assets/assets'
+import SectionHeading from './SectionHeading'
 
 const Exclusive = () => {
-
   const navigate = useNavigate()
 
-  const sections = [
-    { id: '01', label: "Men's", title: "EXCLUSIVE", subtitle: "DISCOVER UNIQUE STYLE", image: assets.Excm, link: "/men" },
-    { id: '02', label: "Women's", title: "EXCLUSIVE", subtitle: "CURATED FOR YOU", image: assets.Excw, link: "/women" },
-    { id: '03', label: "Kid's", title: "EXCLUSIVE", subtitle: "LITTLE TRENDSETTERS", image: assets.Exck, link: "/kids" }
+  const categories = [
+    { name: "JACKETS", link: "/men", image: assets.Jac1 || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=600&q=80" },
+    { name: "T-SHIRTS", link: "/men", image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80" },
+    { name: "HOODIES", link: "/men", image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80" },
+    { name: "SHIRTS", link: "/men", image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80" },
+    { name: "ACCESSORIES", link: "/women", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80" },
+    { name: "PANTS", link: "/women", image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80" },
+    { name: "BAGGY", link: "/kids", image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=600&q=80" },
+    { name: "JEANS", link: "/kids", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=600&q=80" }
   ]
 
   return (
-    <section className="w-full bg-black">
-      <div className="flex flex-col md:flex-row w-full min-h-screen bg-black gap-px border-t border-white/10"> 
-        {sections.map((item, index) => (
-          <div key={index} onClick={() => navigate(item.link)} className="relative flex-1 group overflow-hidden bg-zinc-900 h-[60vh]
-            md:h-screen transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] cursor-pointer">
+    <section className="py-16 md:py-24 bg-[#F5EFE8] text-[#30251F] font-sans px-4 md:px-8">
+      <div className="max-w-[1320px] mx-auto space-y-12">
+        
+        {/* Section Header */}
+        <SectionHeading
+          eyebrow="CURATED SELECTION"
+          title="SHOP BY CATEGORY"
+          description="Architectural silhouettes and everyday essentials for modern living."
+          align="center"
+          useSerif={true}
+        />
 
-            {/* Background Image */}
-            <img src={item.image} alt={item.label} 
-              className="w-full h-full object-cover grayscale brightness-50 contrast-125 transition-all duration-1000 ease-out
-                group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105"/>
-
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent opacity-90 group-hover:opacity-60
-              transition-opacity duration-700"></div>
-            
-            {/* Top Section */}
-            <div className="absolute top-8 left-8 flex items-center space-x-3 z-20">
-              <span className="text-white font-mono text-xs tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">
-                // {item.id}
-              </span>
-              <div className="h-px w-0 bg-white group-hover:w-8 transition-all duration-500 ease-in-out"></div>
-            </div>
-
-            {/* Content Section */}
-            <div className="absolute inset-0 p-8 md:p-4 flex flex-col justify-end z-10">
-              <div className="space-y-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-out">
-
-                {/* Label ( Men / Women / Kids ) */}
-                <p className="text-white/40 text-[10px] tracking-[0.5em] uppercase font-bold"> {item.label} </p>
-
-                {/* Title ( Exclusive ) */}
-                <h3 className="text-white text-5xl xl:text-8xl font-black tracking-tighter leading-[0.85]">
-                  {item.title}
-                  <span className="block text-transparent transition-all duration-700" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)' }}>
-                    SYSTEM
-                  </span>
-                </h3>
-                
-                {/* Bottom Details */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between pt-6 gap-4 opacity-0 group-hover:opacity-100
-                  transition-all duration-700 delay-100">
-                  <p className="text-white/60 text-[10px] tracking-[0.2em] uppercase max-w-37.5">
-                    {item.subtitle}
-                  </p>
-                  
-                  {/* Initialize Button */}
-                  <button onClick={(e) => { e.stopPropagation(); navigate(item.link) }} className="group/btn relative self-start
-                    md:self-center overflow-hidden px-8 py-3 border border-white/30 text-white text-[10px] tracking-[0.3em]
-                    uppercase transition-all duration-300 hover:border-white hover:text-black cursor-pointer">
-                    <span className="relative z-10">Initialize</span>
-                    <div className="absolute inset-0 bg-white translate-x-full group-hover/btn:translate-x-0 transition-transform
-                      duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]"></div>
-                  </button>
-                </div>
+        {/* 8 Categories Grid (4 Columns x 2 Rows) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+          {categories.map((cat, idx) => (
+            <div
+              key={idx}
+              onClick={() => navigate(cat.link)}
+              className="group cursor-pointer flex flex-col items-center text-center space-y-3 font-sans"
+            >
+              {/* Floating Neutral Apparel Image */}
+              <div className="w-full aspect-[3/4] bg-[#D8C4B4]/40 rounded-[10px] overflow-hidden relative shadow-xs transition-transform duration-200 group-hover:scale-[1.02]">
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-95"
+                  loading="lazy"
+                />
               </div>
+
+              {/* Bold Category Name */}
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#30251F] group-hover:text-[#8B634B] transition-colors">
+                {cat.name}
+              </h3>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
       </div>
     </section>

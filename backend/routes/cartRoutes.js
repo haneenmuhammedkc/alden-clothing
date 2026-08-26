@@ -1,36 +1,16 @@
 import express from "express"
-import Cart from "../models/Cart.js"
 import authMiddleware from "../middleware/authMiddleware.js"
+import { getCart, addCart, clearCart } from "../controllers/cartController.js"
 
 const router = express.Router()
 
-// Get cart
-router.get("/", authMiddleware(["user"]), async (req,res)=>{
-  try{
-    const cart = await Cart.findOne({user:req.user.id})
-    res.json(cart || {items:[]})
-  }catch(err){
-    res.status(500).json({message:"Failed to fetch cart"})
-  }
-})
+// Get cart for authenticated user
+router.get("/", authMiddleware(["user"]), getCart)
 
-// Add to cart
-router.post("/add", authMiddleware(["user"]), async (req,res)=>{
-  try{
-    let cart = await Cart.findOne({user:req.user.id})
+// Sync / Add items to cart
+router.post("/add", authMiddleware(["user"]), addCart)
 
-    if(!cart){
-      cart = new Cart({user:req.user.id, items:[]})
-    }
-
-    cart.items = req.body.items
-    await cart.save()
-
-    res.json(cart)
-  }catch(err){
-    res.status(500).json({message:"Failed to update cart"})
-  }
-})
-
+// Clear cart for authenticated user
+router.delete("/clear", authMiddleware(["user"]), clearCart)
 
 export default router

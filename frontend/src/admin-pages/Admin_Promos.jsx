@@ -1,168 +1,205 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { motion } from "framer-motion"
-import { FiToggleLeft, FiToggleRight } from "react-icons/fi"
+import React, { useEffect, useState } from "react"
 import Admin_Sidebar from "../component/Admin_Sidebar"
-import { FaBars } from "react-icons/fa"
+import Button from "../component/Button"
+import Input from "../component/Input"
+import Select from "../component/Select"
+import Badge from "../component/Badge"
+import { Menu, Tag, ToggleLeft, ToggleRight } from "lucide-react"
 import axiosInstance from "../utils/axiosInstance"
 
+/**
+ * Admin_Promos — Alden Clothing Promotional Voucher Management Workspace
+ */
 const AdminPromos = () => {
-
-  const [promos,setPromos] = useState([])
-  const [loading,setLoading] = useState(false)
-  const [error,setError] = useState(null)
-  const [form,setForm] = useState({
-    code:"",
-    discountType:"percent",
-    discountValue:"",
-    minCartValue:"",
-    maxDiscount:"",
-    usageLimit:"",
-    expiryDate:""
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [promos, setPromos] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [form, setForm] = useState({
+    code: "",
+    discountType: "percent",
+    discountValue: "",
+    minCartValue: "",
+    maxDiscount: "",
+    usageLimit: "",
+    expiryDate: ""
   })
 
   const token = localStorage.getItem("adminToken")
 
-  // Fetch Promos
   const fetchPromos = async () => {
-    try{
+    try {
       setLoading(true)
       setError(null)
-      const res = await axiosInstance.get("/api/admin/promos",{
-        headers:{ Authorization:`Bearer ${token}` }
+      const res = await axiosInstance.get("/api/admin/promos", {
+        headers: { Authorization: `Bearer ${token}` }
       })
-      // ensure promos is always array
       setPromos(Array.isArray(res.data) ? res.data : [])
-    }catch(err){
+    } catch (err) {
       console.error(err)
       setError("Failed to load promos")
       setPromos([])
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
 
-  // Create Promo
   const createPromo = async () => {
-    try{
-      await axiosInstance.post(
-        "/api/admin/promos",
-        form, // ✅ body
-        {
-          headers:{ Authorization:`Bearer ${token}` } // ✅ config
-        }
-      )
-      setForm({ code:"", discountType:"percent", discountValue:"", minCartValue:"", maxDiscount:"", usageLimit:"", expiryDate:"" })
+    try {
+      await axiosInstance.post("/api/admin/promos", form, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setForm({ code: "", discountType: "percent", discountValue: "", minCartValue: "", maxDiscount: "", usageLimit: "", expiryDate: "" })
       fetchPromos()
-    }catch(err){
+    } catch (err) {
       console.error(err)
       alert("Failed to create promo")
     }
   }
 
-  // Toggle Promo
   const togglePromo = async (id) => {
-    try{
-      await axiosInstance.patch(
-        `/api/admin/promos/${id}/toggle`,
-        {}, // empty body
-        {
-          headers:{ Authorization:`Bearer ${token}` }
-        }
-      )
+    try {
+      await axiosInstance.patch(`/api/admin/promos/${id}/toggle`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       fetchPromos()
-    }catch(err){
+    } catch (err) {
       console.error(err)
       alert("Toggle failed")
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchPromos()
-  },[])
+  }, [])
 
   return (
-    <div className="min-h-screen flex pl-25">
-      <Admin_Sidebar />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#30251F] font-sans md:pl-60 flex flex-col selection:bg-[#8B634B] selection:text-white">
+      <Admin_Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
-      <div className="flex-1 p-10 text-white overflow-y-auto">
-
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">Customer Feedbacks & Reports</h2>
-            <FaBars className="text-2xl md:hidden" />
-        </div>
-
-        {/* Create Promo Section */}
-        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
-          className="bg-black/40 backdrop-blur-lg border border-white/10 rounded-xl p-6 mb-10">
-
-          <h2 className="mb-4 font-medium">Create Promo</h2>
-          <div className="grid grid-cols-3 gap-4">
-
-            <input className="input" placeholder="Code" value={form.code}
-              onChange={e=>setForm({...form,code:e.target.value.toUpperCase()})}/>
-
-            <select className="input" value={form.discountType} onChange={e=>setForm({...form,discountType:e.target.value})}>
-              <option value="percent">Percent</option>
-              <option value="flat">Flat</option>
-            </select>
-
-            <input type="number" className="input" placeholder="Discount Value" value={form.discountValue}
-              onChange={e=>setForm({...form,discountValue:e.target.value})}/>
-
-            <input type="number" className="input" placeholder="Min Cart" value={form.minCartValue}
-              onChange={e=>setForm({...form,minCartValue:e.target.value})}/>
-
-            <input type="number" className="input" placeholder="Max Discount" value={form.maxDiscount}
-              onChange={e=>setForm({...form,maxDiscount:e.target.value})}/>
-
-            <input type="number" className="input" placeholder="Usage Limit" value={form.usageLimit}
-              onChange={e=>setForm({...form,usageLimit:e.target.value})}/>
-
-            <input type="date" className="input col-span-2" value={form.expiryDate}
-              onChange={e=>setForm({...form,expiryDate:e.target.value})}/>
-
-            <button onClick={createPromo} className="bg-white text-black rounded-lg font-medium">
-              Create
-            </button>
+      <main className="flex-1 p-6 md:p-8 space-y-6">
+        
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#DED4CB]">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#8B634B]">PROMOTIONAL CONTROL</span>
+            <h1 className="text-2xl font-bold text-[#30251F] tracking-tight uppercase">PROMO CODES & VOUCHERS</h1>
           </div>
-        </motion.div>
 
-        {loading && <p className="text-gray-400">Loading promos...</p>}
-        {error && <p className="text-red-400">{error}</p>}
-
-        {/* Promo List */}
-        <div className="space-y-4">
-          {Array.isArray(promos) && promos.map(p => (
-            <motion.div key={p._id} layout
-              className="bg-black/40 border border-white/10 p-5 rounded-xl flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold text-lg">{p.code}</h3>
-
-                <p className="text-sm text-gray-400">
-                  {p.discountValue}{p.discountType==="percent"?"%":"₹"} •
-                  Min ₹{p.minCartValue || 0} •
-                  Used {p.usedCount}/{p.usageLimit || "∞"}
-                </p>
-
-                <p className="text-xs text-gray-500">
-                  Exp: {new Date(p.expiryDate).toLocaleDateString()}
-                </p>
-              </div>
-
-              <button onClick={()=>togglePromo(p._id)}>
-                {p.isActive
-                  ? <FiToggleRight className="text-3xl text-green-400"/>
-                  : <FiToggleLeft className="text-3xl text-gray-500"/>}
-              </button>
-            </motion.div>
-
-          ))}
-
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-[4px] border border-[#DED4CB] text-[#30251F]"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
 
-      </div>
+        {/* Create Promo Panel */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-6 space-y-4 shadow-2xs">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#30251F] pb-2 border-b border-[#DED4CB]">
+            CREATE PROMO DISCOUNTS
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Input
+              label="Promo Code"
+              placeholder="e.g. ALDEN10"
+              value={form.code}
+              onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
+            />
+
+            <Select
+              label="Discount Type"
+              value={form.discountType}
+              onChange={(e) => setForm({ ...form, discountType: e.target.value })}
+              options={[
+                { value: "percent", label: "PERCENTAGE (%)" },
+                { value: "flat", label: "FLAT AMOUNT (₹)" }
+              ]}
+            />
+
+            <Input
+              label="Discount Value"
+              type="number"
+              placeholder="e.g. 10"
+              value={form.discountValue}
+              onChange={(e) => setForm({ ...form, discountValue: e.target.value })}
+            />
+
+            <Input
+              label="Min Cart Value (₹)"
+              type="number"
+              placeholder="e.g. 2000"
+              value={form.minCartValue}
+              onChange={(e) => setForm({ ...form, minCartValue: e.target.value })}
+            />
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <Button variant="primary" onClick={createPromo} className="text-xs">
+              CREATE PROMO VOUCHER
+            </Button>
+          </div>
+        </div>
+
+        {/* Promos Data Table Panel */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-6 space-y-4 shadow-2xs">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#30251F] pb-2 border-b border-[#DED4CB]">
+            ACTIVE PROMOTIONAL CODES
+          </h2>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[#DED4CB] text-[#76675D] font-bold uppercase">
+                  <th className="py-2.5 px-3">Promo Code</th>
+                  <th className="py-2.5 px-3">Type</th>
+                  <th className="py-2.5 px-3">Discount</th>
+                  <th className="py-2.5 px-3">Min Cart</th>
+                  <th className="py-2.5 px-3">Status</th>
+                  <th className="py-2.5 px-3 text-right">Toggle Active</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#DED4CB]/60 text-[#30251F]">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="py-6 text-center text-[#76675D] italic">Loading promos...</td>
+                  </tr>
+                ) : promos.length > 0 ? (
+                  promos.map((p) => (
+                    <tr key={p._id} className="hover:bg-[#F8FAFC]">
+                      <td className="py-3 px-3 font-semibold text-[#8B634B] uppercase">{p.code}</td>
+                      <td className="py-3 px-3 uppercase text-[#76675D]">{p.discountType}</td>
+                      <td className="py-3 px-3 font-semibold">{p.discountType === 'percent' ? `${p.discountValue}%` : `₹${p.discountValue}`}</td>
+                      <td className="py-3 px-3 text-[#76675D]">₹{(p.minCartValue || 0).toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-3">
+                        <Badge variant={p.isActive ? "success" : "danger"}>
+                          {p.isActive ? "ACTIVE" : "INACTIVE"}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => togglePromo(p._id)}
+                          className="p-1.5 text-[#8B634B] hover:bg-[#F5EFE8] rounded-[4px] cursor-pointer"
+                        >
+                          {p.isActive ? <ToggleRight className="w-5 h-5 text-[#2D5A27]" /> : <ToggleLeft className="w-5 h-5 text-[#76675D]" />}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="py-6 text-center text-[#76675D] italic">No promotional codes found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
     </div>
   )
 }

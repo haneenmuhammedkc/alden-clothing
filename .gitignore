@@ -1,18 +1,39 @@
-# Ignore node modules everywhere
-node_modules
+# Dependencies
+node_modules/
 
-# Environment files
+# Environment & Secrets
 .env
 .env.*
+!.env.example
 
-# Build folders
-dist
-build
+# Firebase / Service Account Secrets
+backend/config/serviceAccountKey.json
+
+# Build / Distribution
+dist/
+build/
 
 # Logs
 *.log
+logs/
 
-# OS files
+# OS / Editor Files
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
 
-backend/config/serviceAccountKey.json
+# Runtime / Temporary Files
+*.tmp
+*.temp
+
+# Uploads
+backend/uploads/
+
+# Coverage / Testing
+coverage/
+.nyc_output/
+
+# Local Database / Debug Files
+*.sqlite
+*.sqlite3

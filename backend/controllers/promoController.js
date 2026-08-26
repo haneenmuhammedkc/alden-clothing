@@ -1,59 +1,53 @@
-import PromoCode from "../models/PromoCode.js"
+import {
+  createAdminPromo,
+  fetchAdminPromos,
+  evaluatePromoCode,
+  toggleAdminPromo
+} from "../services/promoService.js"
 
-// Create a Promo
-export const createPromo = async (req,res) => {
-  try{
-    const promo = await PromoCode.create(req.body)
-    res.status(201).json(promo)
-  }catch(err){
-    res.status(400).json({ message: err.message })
+export const createPromo = async (req, res) => {
+  try {
+    const promo = await createAdminPromo(req.body)
+    return res.status(201).json({ success: true, promo })
+  } catch (err) {
+    const statusCode = err.statusCode || 400
+    return res.status(statusCode).json({ success: false, message: err.message })
   }
 }
 
-// Get All Promos
-export const getPromos = async (req,res) => {
-  const promos = await PromoCode.find().sort({createdAt:-1})
-  res.json(promos)
-}
-
-// Apply Promo
-export const applyPromo = async (req,res) => {
-  const { code, cartTotal } = req.body
-  const promo = await PromoCode.findOne({
-    code: code.toUpperCase(),
-    isActive:true
-  })
-
-  if(!promo) return res.status(400).json({message:"Invalid code"})
-  if(promo.expiryDate < new Date()) return res.status(400).json({message:"Expired"})
-  if(promo.usageLimit && promo.usedCount >= promo.usageLimit)
-      return res.status(400).json({message:"Usage limit reached"})
-  if(cartTotal < promo.minCartValue)
-      return res.status(400).json({message:"Minimum cart value not met"})
-
-  let discount =
-    promo.discountType === "percent"
-      ? (cartTotal * promo.discountValue)/100
-      : promo.discountValue
-
-  if(promo.maxDiscount){
-    discount = Math.min(discount,promo.maxDiscount)
+export const getPromos = async (req, res) => {
+  try {
+    const promos = await fetchAdminPromos()
+    return res.json({ success: true, promos })
+  } catch (err) {
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: "Failed to fetch promos" })
   }
-
-  res.json({
-    discount,
-    promoId: promo._id,
-    code: promo.code
-  })
 }
 
-export const togglePromo = async (req,res)=>{
-  const promo = await PromoCode.findById(req.params.id)
+export const applyPromo = async (req, res) => {
+  try {
+    const { code, cartTotal } = req.body
+    const result = await evaluatePromoCode({ code, cartTotal })
 
-  if(!promo) return res.status(404).json({message:"Promo not found"})
+    return res.json({
+      success: true,
+      discount: result.discount,
+      promoId: result.promoId,
+      code: result.code
+    })
+  } catch (err) {
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: err.message })
+  }
+}
 
-  promo.isActive = !promo.isActive
-  await promo.save()
-
-  res.json(promo)
+export const togglePromo = async (req, res) => {
+  try {
+    const promo = await toggleAdminPromo(req.params.id)
+    return res.json({ success: true, promo })
+  } catch (err) {
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: "Failed to toggle promo code" })
+  }
 }

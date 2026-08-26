@@ -1,11 +1,46 @@
 /* GLOBAL STYLESHEET — ALDEN UI
-   Tailwind Base / Typography / Components / Utilities / Animations */
-
-/* BASE — TAILWIND + GLOBAL TYPOGRAPHY */
+   Timeless Editorial Luxury Design System Foundations (DESIGN.md) */
 
 @import "tailwindcss";
 
-/* Font: Montserrat Used for titles + alerts */
+/* ================================================== */
+/* 1. TAILWIND V4 THEME CONFIGURATION                 */
+/* ================================================== */
+@theme {
+  --color-primary-bg: #F5EFE8;
+  --color-secondary-surface: #FBF9F6;
+  --color-warm-beige: #D8C4B4;
+  --color-taupe: #B7A08D;
+  --color-cocoa: #8B634B;
+  --color-deep-espresso: #30251F;
+  --color-muted-brown: #76675D;
+  --color-border-default: #DED4CB;
+
+  --font-sans: "Montserrat", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+
+  --radius-editorial-lg: 48px;
+  --radius-editorial: 32px;
+  --radius-card: 10px;
+  --radius-btn: 8px;
+  --radius-input: 4px;
+}
+
+/* ================================================== */
+/* 2. ROOT DESIGN TOKENS & TYPOGRAPHY FOUNDATIONS     */
+/* ================================================== */
+:root {
+  --bg-primary: #F5EFE8;
+  --bg-surface: #FBF9F6;
+  --bg-warm-beige: #D8C4B4;
+  --color-taupe: #B7A08D;
+  --color-cocoa-brown: #8B634B;
+  --color-deep-espresso: #30251F;
+  --color-muted-brown: #76675D;
+  --border-default: #DED4CB;
+}
+
+/* Font: Montserrat Used for UI, buttons, prices, body, metadata */
 @font-face {
   font-family: "Montserrat";
   src: url("/fonts/Montserrat/Montserrat-Regular.ttf") format("truetype");
@@ -14,13 +49,123 @@
   font-display: swap;
 }
 
-/* Global typography overrides */
+/* Global Typography & Font Smoothing */
+body {
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #F5EFE8;
+  color: #30251F;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Cormorant Garamond Serif Utility */
+.font-serif {
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+}
+
+/* Montserrat Sans-Serif Utility */
+.font-sans {
+  font-family: "Montserrat", sans-serif !important;
+}
+
+/* Global Component & Typography Overrides */
 .title,
 .swal2-popup {
   font-family: "Montserrat", sans-serif !important;
 }
 
-/* COMPONENTS — ALDEN ICON + SWEETALERT UI */
+/* ================================================== */
+/* 3. STOREFRONT LAYOUT & CONTAINER SYSTEM            */
+/* ================================================== */
+.alden-container {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .alden-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Major Section Spacing: 64px (py-16) to 96px (py-24) */
+.alden-section-spacing {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+  .alden-section-spacing {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+/* Internal Component Spacing: 24px (gap-6) to 48px (gap-12) */
+.alden-component-gap {
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .alden-component-gap {
+    gap: 3rem;
+  }
+}
+
+/* ================================================== */
+/* 4. TYPOGRAPHY SCALE CLASSES                        */
+/* ================================================== */
+.text-editorial-display {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.25rem; /* 36px mobile */
+  line-height: 1.05;
+  font-weight: 400;
+}
+
+@media (min-width: 768px) {
+  .text-editorial-display {
+    font-size: 4rem; /* 64px desktop */
+  }
+}
+
+@media (min-width: 1280px) {
+  .text-editorial-display {
+    font-size: 5.5rem; /* 88px large desktop */
+  }
+}
+
+.text-h1-editorial {
+  font-size: 2.25rem; /* 36px */
+  line-height: 1.1;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .text-h1-editorial {
+    font-size: 3.5rem; /* 56px */
+  }
+}
+
+.text-h2-editorial {
+  font-size: 1.75rem; /* 28px */
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+@media (min-width: 768px) {
+  .text-h2-editorial {
+    font-size: 2.75rem; /* 44px */
+  }
+}
+
+/* ================================================== */
+/* 5. LEGACY COMPONENT COMPATIBILITY                  */
+/* ================================================== */
 
 /* Alden Alert Icon Circular animated status icon */
 .alden-icon {
@@ -43,71 +188,56 @@
 .alden-icon.info    { border-color: #60a5fa; color: #60a5fa; }
 .alden-icon.warn    { border-color: #facc15; color: #facc15; }
 
-/* Hover scale effect */
 .alden-alert:hover .alden-icon {
   transform: scale(1.08);
 }
 
-
-/* SweetAlert Popup Glass UI */
+/* SweetAlert Popup UI */
 .swal2-popup {
   backdrop-filter: blur(12px);
-  background: rgba(15, 15, 15, 0.3) !important;
-  border-radius: 28px !important;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  background: rgba(48, 37, 31, 0.85) !important;
+  color: #FBF9F6 !important;
+  border-radius: 16px !important;
+  border: 1px solid #DED4CB;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-
-/* Shared SweetAlert Buttons */
 .swal2-confirm,
 .swal2-cancel {
-  border-radius: 999px !important;
+  border-radius: 8px !important;
   padding: 8px 24px !important;
   transition: all 0.3s ease;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-family: "Montserrat", sans-serif !important;
 }
 
-/* Confirm Button (Primary) */
 .swal2-confirm {
-  background: white !important;
-  color: black !important;
-  border: 1px solid white !important;
+  background: #8B634B !important;
+  color: white !important;
+  border: none !important;
 }
 
 .swal2-confirm:hover {
-  background: black !important;
-  color: white !important;
+  background: #30251F !important;
 }
 
-.swal2-confirm:focus {
-  box-shadow: none !important;
-}
-
-/* Cancel Button (Secondary) */
 .swal2-cancel {
   background: transparent !important;
-  color: white !important;
-  border: 1px solid white !important;
+  color: #FBF9F6 !important;
+  border: 1px solid #DED4CB !important;
 }
 
 .swal2-cancel:hover {
-  background: white !important;
-  color: black !important;
+  background: #FBF9F6 !important;
+  color: #30251F !important;
 }
 
-
-/* SweetAlert Backdrop Blur */
 .swal2-backdrop-show {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(6px);
+  background: rgba(48, 37, 31, 0.4) !important;
+  backdrop-filter: blur(4px);
 }
 
-
-
-/* UTILITIES — SCROLLBAR + INPUT HELPERS */
-
-/* Hide Scrollbar Utility */
+/* UTILITIES — SCROLLBAR & INPUT HELPERS */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -116,41 +246,33 @@
   scrollbar-width: none;
 }
 
-/* Thin Custom Scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(139, 99, 75, 0.3);
   border-radius: 10px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(139, 99, 75, 0.6);
 }
 
-/* Remove Number Input Arrows */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* ANIMATIONS — GLOBAL */
-
-/* Pulsing glow used in alert icons */
+/* ANIMATIONS — GLOBAL & LEGACY */
 @keyframes pulseGlow {
   0%   { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
   50%  { box-shadow: 0 0 15px rgba(255,255,255,0.7); }
   100% { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
 }
 
-/* Animated status dot */
 @keyframes pulseDot {
   0% {
     transform: scale(0.85);
@@ -169,105 +291,25 @@ input::-webkit-inner-spin-button {
   }
 }
 
-/* ANIMATIONS — ORDER PROCESSING LOADER */
-
-/* Progress bar fill animation */
-@keyframes progressMove {
-  0% {
-    width: 0%;
-    left: 0;
-  }
-  100% {
-    width: 100%;
-    left: 0;
-  }
-}
-
-/* Orbit / ring spinning animation */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* ANIMATIONS — ORDER SUCCESS */
-
-/* SVG checkmark drawing animation */
-@keyframes drawCheck {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Spin animation (⚠️ Only add if you don't already have it) */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* ANIMATIONS — FOOTER */
-
-/* Slow bounce used for scroll hint indicators */
-@keyframes bounce-slow {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(100%); }
-}
-
-.animate-bounce-slow {
-  animation: bounce-slow 3s infinite ease-in-out;
-}
-
-
-
-/* ANIMATIONS — HERO SECTION */
-
-/* Scanning line animation */
-@keyframes scan {
-  0%   { transform: translateY(0vh); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateY(100vh); opacity: 0; }
-}
-
-/* Outline text effect */
-.stroke-text {
-  -webkit-text-stroke: 1px white;
-}
-
-/* Text reveal from bottom */
 @keyframes reveal-up {
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
 
-/* Fade + slide animation */
 @keyframes fade-in-up {
   from { transform: translateY(20px); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
 
-/* Background slow zoom effect */
 @keyframes slow-zoom {
   from { transform: scale(1.05); }
   to   { transform: scale(1.15); }
 }
-
-/* ANIMATIONS — UI EFFECTS */
-
-/* Expanding underline animation */
-@keyframes extend-line {
-  from { width: 0; }
-  to   { width: 64px; }
-}
-
-/* Scroll indicator animation */
-@keyframes scroll-progress {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(200%); }
-}
-
-
-
-/* ANIMATION UTILITY CLASSES */
 
 .animate-reveal-up {
   animation: reveal-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -277,27 +319,14 @@ input::-webkit-inner-spin-button {
   animation: fade-in-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-extend-line {
-  animation: extend-line 1.5s ease-in-out forwards;
-}
-
 .animate-slow-zoom {
   animation: slow-zoom 20s linear infinite alternate;
 }
 
-.animate-scroll-progress {
-  animation: scroll-progress 3s ease-in-out infinite;
-}
-
-/* Animation delay helpers */
 .delay-300 { animation-delay: 0.3s; }
 .delay-500 { animation-delay: 0.5s; }
 
-
-
 /* ACCESSIBILITY */
-
-/* Disable motion for users who prefer reduced animation */
 @media (prefers-reduced-motion: reduce) {
   .alden-icon {
     animation: none;

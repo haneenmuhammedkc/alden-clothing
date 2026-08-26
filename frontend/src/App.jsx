@@ -31,11 +31,15 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import OurPolicy from './component/OurPolicy'
 import OrderProcessing from './pages/OrderProcessing'
+import DesignPreviewContainer from './features/design-preview/DesignPreviewContainer'
 
 const App = () => {
   return (
     <div>
       <Routes>
+        {/* Visual Design Prototype Route */}
+        <Route path='/design-preview/*' element={<DesignPreviewContainer />} />
+
         <Route path='/login' element={<User_Login/>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />

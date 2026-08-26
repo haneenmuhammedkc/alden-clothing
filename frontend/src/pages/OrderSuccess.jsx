@@ -1,83 +1,47 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
+import Button from "../component/Button"
+import { CheckCircle2 } from "lucide-react"
 
+/**
+ * OrderSuccess — Alden Clothing Timeless Editorial Luxury Order Success Page
+ */
 const OrderSuccess = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4 relative overflow-hidden">
-
-      {/* Background Decorative Grid - Matches Processing Page */}
-      <div className="absolute inset-0 opacity-[0.03]" 
-        style={{ backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
-          backgroundSize: '40px 40px' }}/>
-
-      {/* Decorative Circles */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-black/2 rounded-full -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-black/2 rounded-full translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDelay: '1s' }} />
-
-      <div className="relative z-10 max-w-md w-full flex flex-col items-center">
+    <div className="min-h-screen bg-[#F5EFE8] text-[#30251F] font-sans flex items-center justify-center p-6 selection:bg-[#8B634B] selection:text-white">
+      <div className="max-w-md w-full bg-[#FBF9F6] border border-[#DED4CB] rounded-[16px] p-8 sm:p-10 text-center space-y-6 shadow-sm">
         
-        {/* Animated Success Icon Container */}
-        <div className="relative mb-10 group">
-          
-          {/* Pulsing Outer Glow */}
-          <div className="absolute inset-0 bg-black/5 rounded-full scale-150 blur-xl animate-pulse" />
-          
-          {/* Rotating Border */}
-          <div className="absolute -inset-2.5 border border-dashed border-black/20 rounded-full animate-[spin_15s_linear_infinite]" />
-          
-          {/* Main Icon Circle */}
-          <div className="relative w-24 h-24 bg-black rounded-full flex items-center justify-center shadow-2xl transition-transform duration-500 group-hover:scale-110">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"
-              strokeLinejoin="round" className="relative z-10">
-              <polyline points="20 6 9 17 4 12" 
-                style={{ strokeDasharray: 50, strokeDashoffset: 50, animation: 'drawCheck 0.8s ease-out forwards 0.5s' }}/>
-            </svg>
-          </div>
+        {/* Animated Check Icon */}
+        <div className="w-16 h-16 rounded-full bg-[#E8F2E6] border border-[#A5C69F] text-[#2D5A27] flex items-center justify-center mx-auto shadow-2xs">
+          <CheckCircle2 className="w-8 h-8" />
         </div>
 
-        {/* Content Section */}
-        <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase tracking-[0.5em] text-gray-400 font-medium">
-              Transaction Confirmed
-            </span>
-            <h1 className="text-3xl font-light tracking-tighter text-black">
-              ORDER <span className="font-bold">SECURED</span>
-            </h1>
-          </div>
-
-          <p className="text-sm text-gray-500 leading-relaxed max-w-70 mx-auto font-light">
-            Your purchase has been authenticated and decentralized. Prepare for distribution.
+        {/* Header & Copy */}
+        <div className="space-y-2">
+          <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#8B634B]">
+            TRANSACTION CONFIRMED
+          </span>
+          <h1 className="text-3xl font-serif font-normal text-[#30251F]">
+            ORDER SECURED
+          </h1>
+          <p className="text-xs text-[#76675D] leading-relaxed pt-1">
+            Thank you for shopping with Alden Clothing. Your purchase order has been logged and sent to our fulfillment team.
           </p>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <button onClick={() => navigate("/myorder")}
-              className="group relative px-8 py-3 overflow-hidden rounded-none border border-black transition-all cursor-pointer">
-              <div className="absolute inset-0 w-0 bg-black transition-all duration-300 ease-out group-hover:w-full" />
-              <span className="relative z-10 text-xs font-bold tracking-widest uppercase transition-colors duration-300 group-hover:text-white">
-                View Orders
-              </span>
-            </button>
-
-            <button onClick={() => navigate("/")}
-              className="group relative px-8 py-3 overflow-hidden rounded-none bg-black border border-black transition-all cursor-pointer">
-              <div className="absolute inset-0 w-0 bg-white transition-all duration-300 ease-out group-hover:w-full" />
-              <span className="relative z-10 text-xs font-bold tracking-widest uppercase transition-colors duration-300 text-white group-hover:text-black">
-                Continue
-              </span>
-            </button>
-          </div>
         </div>
 
-        {/* Footer Detail */}
-        <div className="mt-16 opacity-20 flex items-center gap-2">
-          <div className="h-px w-8 bg-black" />
-          <span className="text-[8px] uppercase tracking-widest font-bold">Protocol v4.0.1</span>
-          <div className="h-px w-8 bg-black" />
+        {/* Action CTAs */}
+        <div className="space-y-3 pt-4 border-t border-[#DED4CB]">
+          <Button variant="primary" fullWidth onClick={() => navigate("/myorder")} className="h-11 text-xs">
+            VIEW ORDER DETAILS
+          </Button>
+
+          <Button variant="secondary" fullWidth onClick={() => navigate("/")} className="h-11 text-xs">
+            CONTINUE SHOPPING
+          </Button>
         </div>
+
       </div>
     </div>
   )

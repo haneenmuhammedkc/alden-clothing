@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react"
 import Admin_Sidebar from "../component/Admin_Sidebar"
-import { FaBars, FaTrash, FaEye } from "react-icons/fa"
-import axios from "axios"
-import { assets } from "../assets/assets"
+import Badge from "../component/Badge"
+import Button from "../component/Button"
+import Modal from "../component/Modal"
+import { Menu, Eye, ShoppingBag, CheckCircle2, Clock, XCircle, Search } from "lucide-react"
 import axiosInstance from "../utils/axiosInstance"
 
+/**
+ * Admin_Orders — Alden Clothing Order Management Workspace
+ */
 const Admin_Orders = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [orders, setOrders] = useState([])
@@ -25,24 +29,35 @@ const Admin_Orders = () => {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`
         }
       })
-      setOrders(res.data.data)
+      setOrders(res.data.data || [])
     } catch (error) {
       console.error("Fetch Error:", error)
     }
   }
 
-  const filteredOrders = orders.filter(order => {
-    // Status filter
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    try {
+      const token = localStorage.getItem("adminToken")
+      await axiosInstance.put(
+        `/api/admin/orders/${orderId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      fetchOrders()
+    } catch (err) {
+      alert("Failed to update status")
+    }
+  }
+
+  const filteredOrders = orders.filter((order) => {
     if (filter !== "all" && order.orderStatus?.toLowerCase() !== filter) return false
 
-    // Search filter
     if (
       searchTerm &&
       !order._id.toString().toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !order.customer.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+      !order.customer?.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
     ) return false
 
-    // Date filter
     if (selectedDate) {
       const orderDate = new Date(order.createdAt).toISOString().split("T")[0]
       if (orderDate !== selectedDate) return false
@@ -50,234 +65,195 @@ const Admin_Orders = () => {
     return true
   })
 
-  const Card = ({ title, value, subText, iconBg, icon }) => {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4 hover:shadow-md transition">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-xl ${iconBg}`}> {icon} </div>
-        <div>
-          <p className="text-gray-500 text-sm font-medium">{title}</p>
-          <h3 className="text-2xl font-bold text-gray-800">{value}</h3>
-          <p className="text-gray-400 text-xs">{subText}</p>
-        </div>
+  const KPICard = ({ title, value, icon: IconComponent }) => (
+    <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-5 flex items-center space-x-4 shadow-2xs">
+      <div className="w-10 h-10 rounded-[6px] bg-[#F5EFE8] flex items-center justify-center text-[#8B634B] shrink-0 border border-[#DED4CB]/60">
+        <IconComponent className="w-5 h-5" />
       </div>
-  )}
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-[#76675D]">{title}</p>
+        <h3 className="text-2xl font-bold text-[#30251F] font-sans">{value}</h3>
+      </div>
+    </div>
+  )
 
-  const statusStyles = {
-    pending: "bg-yellow-100 text-yellow-600",
-    processing: "bg-blue-100 text-blue-600",
-    shipped: "bg-purple-100 text-purple-600",
-    delivered: "bg-green-100 text-green-600",
-    cancelled: "bg-red-100 text-red-600",
-  }
-
-return (
-  <div className="w-full h-screen flex flex-col md:flex-row bg-gray-100 pl-27.5 overflow-hidden">
-      {/* Sidebar */}
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] text-[#30251F] font-sans md:pl-60 flex flex-col selection:bg-[#8B634B] selection:text-white">
       <Admin_Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
-      {/* Main Content */}
-      <main className="flex-1 px-4 sm:px-6 md:px-8 py-4 flex flex-col overflow-hidden">
-
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Order Management</h2>
-          <FaBars onClick={() => setMobileMenuOpen(true)} className="text-2xl text-gray-600 cursor-pointer md:hidden"/>
-        </div>
-
-        {/* Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <Card title="Total Orders" value={orders.length} subText="All orders received" iconBg="bg-blue-500" icon={<FaEye />}/>
-          <Card title="Completed" value={orders.filter(o => o.orderStatus?.toLowerCase() === "delivered").length} subText="Successfully delivered" 
-            iconBg="bg-green-500" icon={<FaEye />} />
-          <Card title="Pending" value={orders.filter(o => o.orderStatus?.toLowerCase() === "pending").length} subText="Awaiting processing" 
-            iconBg="bg-yellow-500" icon={<FaEye />} />
-          <Card title="Cancelled" value={orders.filter(o => o.orderStatus?.toLowerCase() === "cancelled").length} subText="Cancelled by users/admin" 
-            iconBg="bg-red-500" icon={<FaTrash />} />
-        </div>
-
-        {/* Search + Filters */}
-        <div className="mb-6">
-          <div className="flex flex-col md:flex-row items-stretch bg-white border border-gray-300 rounded-xl overflow-hidden shadow-sm">
-
-            {/* Search */}
-            <div className="relative flex-1">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><img src={assets.search_icon} className="w-5" /></span>
-              <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search by Order ID or Customer"
-                className="w-full h-full pl-12 pr-4 py-3 focus:outline-none"/>
-            </div>
-            <div className="hidden md:block w-px bg-gray-200" />
-
-            {/* Date Filter */}
-            <div className="relative w-full md:w-52">
-              <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full h-full px-4 py-3 focus:outline-none bg-white cursor-pointer"/>
-            </div>
-            <div className="hidden md:block w-px bg-gray-200" />
-
-            {/* Status Filter */}
-            <div className="relative w-full md:w-56">
-              <select value={filter} onChange={(e) => setFilter(e.target.value)} className="w-full h-full px-4 py-3 cursor-pointer">
-                <option value="all">All Orders</option>
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
+      <main className="flex-1 p-6 md:p-8 space-y-6">
+        
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#DED4CB]">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#8B634B]">FULFILLMENT WORKSPACE</span>
+            <h1 className="text-2xl font-bold text-[#30251F] tracking-tight uppercase">ORDER MANAGEMENT</h1>
           </div>
 
-          {/* Active Filters */}
-          {(filter !== "all" || selectedDate || searchTerm) && (
-            <div className="flex flex-wrap items-center gap-2 mt-3 text-sm">
-              <span className="text-gray-500">Active filters:</span>
-
-              {searchTerm && (
-                <span className="flex items-center gap-2 px-3 py-1 bg-gray-200 rounded-full">
-                  Search: "{searchTerm}"
-                  <button onClick={() => setSearchTerm("")} className="text-gray-600 hover:text-black">✕</button>
-                </span>
-              )}
-
-              {selectedDate && (
-                <span className="flex items-center gap-2 px-3 py-1 bg-gray-200 rounded-full">
-                  Date: {selectedDate}
-                  <button onClick={() => setSelectedDate("")} className="text-gray-600 hover:text-black">✕</button>
-                </span>
-              )}
-
-              {filter !== "all" && (
-                <span className="flex items-center gap-2 px-3 py-1 bg-gray-200 rounded-full">
-                  Status: {filter}
-                  <button onClick={() => setFilter("all")} className="text-gray-600 hover:text-black">✕</button>
-                </span>
-              )}
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-[4px] border border-[#DED4CB] text-[#30251F]"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Orders Table */}
-        <div className="bg-white shadow-lg rounded-lg p-4 flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-          <table className="w-full min-w-225 text-left">
-            <thead className="sticky top-0 bg-white z-10">
-              <tr className="border-b text-gray-600">
-                <th className="py-3 px-2">Order ID</th>
-                <th className="py-3 px-2">Customer</th>
-                <th className="py-3 px-2">Total Amount</th>
-                <th className="py-3 px-2">Date</th>
-                <th className="py-3 px-2">Status</th>
-                <th className="py-3 px-2">Actions</th>
-              </tr>
-            </thead>
+        {/* KPI Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <KPICard title="TOTAL ORDERS" value={orders.length} icon={ShoppingBag} />
+          <KPICard title="COMPLETED" value={orders.filter(o => o.orderStatus?.toLowerCase() === "delivered").length} icon={CheckCircle2} />
+          <KPICard title="PENDING" value={orders.filter(o => o.orderStatus?.toLowerCase() === "pending").length} icon={Clock} />
+          <KPICard title="CANCELLED" value={orders.filter(o => o.orderStatus?.toLowerCase() === "cancelled").length} icon={XCircle} />
+        </div>
 
-            <tbody className="text-gray-700">
-              {filteredOrders.map((order) => (
-                <tr className="border-b" key={order._id}>
-                  <td className="py-3 px-2 font-medium">{order._id.slice(-6)}</td>
-                  <td className="py-3 px-2">{order.customer.firstName}</td>
-                  <td className="py-3 px-2">₹ {order.total}</td>
-                  <td className="py-3 px-2">{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td className="py-3 px-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize tracking-wide
-                        ${statusStyles[order.orderStatus] || "bg-gray-200 text-gray-800"}`}>
-                      {order.orderStatus}
-                    </span>
-                  </td>
-                  <td className="py-3 px-2">
-                    <div className="pl-5">
-                      <button onClick={() => { setSelectedOrder(order), setShowModal(true) }} 
-                        className="text-blue-800 hover:text-blue-950 text-lg cursor-pointer"><FaEye /></button>
-                    </div>
-                  </td>
+        {/* Filter Controls Bar */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center space-x-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-[#76675D]" />
+              <input
+                type="text"
+                placeholder="Search ID or Customer..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#DED4CB] rounded-[4px] text-xs uppercase text-[#30251F] focus:outline-none focus:border-[#8B634B]"
+              />
+            </div>
+
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="py-2 px-3 bg-[#F8FAFC] border border-[#DED4CB] rounded-[4px] text-xs text-[#30251F] focus:outline-none focus:border-[#8B634B]"
+            />
+          </div>
+
+          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end overflow-x-auto">
+            {["all", "pending", "processing", "shipped", "delivered", "cancelled"].map((st) => (
+              <button
+                key={st}
+                type="button"
+                onClick={() => setFilter(st)}
+                className={`px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase transition-colors cursor-pointer shrink-0 ${
+                  filter === st
+                    ? "bg-[#8B634B] text-white"
+                    : "bg-[#F8FAFC] border border-[#DED4CB] text-[#76675D] hover:text-[#30251F]"
+                }`}
+              >
+                {st}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Orders Data Table Panel */}
+        <div className="bg-[#FFFFFF] border border-[#DED4CB] rounded-[8px] p-6 space-y-4 shadow-2xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[#DED4CB] text-[#76675D] font-bold uppercase">
+                  <th className="py-2.5 px-3">Order ID</th>
+                  <th className="py-2.5 px-3">Customer</th>
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">Payment</th>
+                  <th className="py-2.5 px-3">Total</th>
+                  <th className="py-2.5 px-3">Status</th>
+                  <th className="py-2.5 px-3 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
+              <tbody className="divide-y divide-[#DED4CB]/60 text-[#30251F]">
+                {filteredOrders.length > 0 ? (
+                  filteredOrders.map((order) => {
+                    const statusVariant = 
+                      order.orderStatus === "delivered" ? "success" :
+                      order.orderStatus === "pending" ? "warning" :
+                      order.orderStatus === "shipped" ? "info" : "default"
 
-          </table>
+                    return (
+                      <tr key={order._id} className="hover:bg-[#F8FAFC]">
+                        <td className="py-3 px-3 font-semibold text-[#8B634B]">#{order._id.slice(-6).toUpperCase()}</td>
+                        <td className="py-3 px-3 font-medium">{order.customer?.firstName} {order.customer?.lastName}</td>
+                        <td className="py-3 px-3 text-[#76675D]">{new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td className="py-3 px-3 uppercase font-medium">{order.paymentMethod}</td>
+                        <td className="py-3 px-3 font-semibold">₹{(order.total || 0).toLocaleString('en-IN')}</td>
+                        <td className="py-3 px-3">
+                          <select
+                            value={order.orderStatus}
+                            onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                            className="bg-transparent border border-[#DED4CB] rounded-[4px] px-2 py-1 text-xs font-semibold text-[#30251F]"
+                          >
+                            <option value="pending">PENDING</option>
+                            <option value="processing">PROCESSING</option>
+                            <option value="shipped">SHIPPED</option>
+                            <option value="delivered">DELIVERED</option>
+                            <option value="cancelled">CANCELLED</option>
+                          </select>
+                        </td>
+                        <td className="py-3 px-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedOrder(order)
+                              setShowModal(true)
+                            }}
+                            className="p-1.5 text-[#8B634B] hover:bg-[#F5EFE8] rounded-[4px] cursor-pointer"
+                            title="View Order Manifest"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="py-6 text-center text-[#76675D] italic">No orders match filter criteria.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
       </main>
 
-      {showModal && selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white w-full max-w-3xl rounded-xl shadow-lg p-6 overflow-y-auto max-h-[90vh]">
-            
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold"> Order Details </h2>
-              <button onClick={() => setShowModal(false)} className="text-2xl text-gray-500 hover:text-black cursor-pointer">
-                ×
-              </button>
-            </div>
-
-            {/* Customer */}
-            <div className="mb-4">
-              <h3 className="font-semibold mb-1">Customer Details :</h3>
-              <p className="text-sm text-gray-700 mb-3">
-                Name: {selectedOrder.customer.firstName} {selectedOrder.customer.lastName}<br/>
-                Phone: {selectedOrder.customer.phone}<br/>
-                Email: {selectedOrder.customer.email}
+      {/* Order Details Modal */}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={`ORDER MANIFEST — #${selectedOrder?._id?.slice(-6)?.toUpperCase()}`}
+      >
+        {selectedOrder && (
+          <div className="space-y-4 font-sans text-xs">
+            <div className="bg-[#F5EFE8] p-3 rounded-[6px] border border-[#DED4CB] space-y-1">
+              <p className="font-bold uppercase text-[#30251F]">
+                CUSTOMER: {selectedOrder.customer?.firstName} {selectedOrder.customer?.lastName}
               </p>
-              <hr className="text-black/20" />
-            </div>
-
-            {/* Address */}
-            <div className="mb-4">
-              <h3 className="font-semibold mb-1">Delivery Address :</h3>
-              <p className="text-sm text-gray-700 mb-3">
-                {selectedOrder.customer.address.line},<br/>
-                {selectedOrder.customer.address.city}, {selectedOrder.customer.address.state}<br/>
-                {selectedOrder.customer.address.pincode}
+              <p className="text-[#76675D]">EMAIL: {selectedOrder.customer?.email}</p>
+              <p className="text-[#76675D]">PHONE: {selectedOrder.customer?.phone}</p>
+              <p className="text-[#76675D]">
+                ADDRESS: {selectedOrder.customer?.address?.line}, {selectedOrder.customer?.address?.city}, {selectedOrder.customer?.address?.state} — {selectedOrder.customer?.address?.pincode}
               </p>
-              <hr className="text-black/20" />
             </div>
 
-            {/* Items */}
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2">Ordered Items :</h3>
-              {selectedOrder.items.map(item => (
-                <div key={item.productId} className="flex gap-4 mb-3">
-                  <img src={item.image} className="w-16 h-16 object-contain border rounded"/>
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm">Qty: {item.quantity}</p>
-                    <p className="text-sm mb-1">₹ {item.price}</p>
-                  </div>
+            <div className="space-y-2">
+              <p className="font-bold uppercase tracking-wider text-[#30251F]">ORDERED ITEMS</p>
+              {selectedOrder.items?.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center py-1 border-b border-[#DED4CB]/60">
+                  <span>{item.name} × {item.quantity || item.qty}</span>
+                  <span className="font-semibold">₹{(item.price * (item.quantity || item.qty)).toLocaleString('en-IN')}</span>
                 </div>
               ))}
-              <hr className="text-black/20" />
             </div>
 
-            {/* Payment */}
-            <div className="mb-3">
-              <h3 className="font-semibold mb-1">Payment Info :</h3>
-              <p className="text-sm">Method: {selectedOrder.paymentMethod}</p>
-              <p className="text-sm mb-3">Status: {selectedOrder.paymentStatus}</p>
-              <hr className="text-black/20" />
+            <div className="pt-2 border-t border-[#DED4CB] flex justify-between font-bold text-sm text-[#8B634B]">
+              <span>TOTAL VALUE:</span>
+              <span>₹{(selectedOrder.total || 0).toLocaleString('en-IN')}</span>
             </div>
-
-            {/* Price */}
-            <div className="mb-4">
-              <h3 className="font-semibold mb-1">Amount Info :</h3>
-              <p className="text-sm">Subtotal: ₹ {selectedOrder.subtotal}</p>
-              <p className="text-sm">Tax: ₹ {selectedOrder.tax}</p>
-              <p className="text-sm">Shipping: ₹ {selectedOrder.shipping}</p>
-              <p className="font-semibold mt-1 mb-3">Total: ₹ {selectedOrder.total}</p>
-            </div>
-
-            {/* Status */}
-            <div className="mt-4 flex items-center gap-2">
-              <span className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide
-                  ${statusStyles[selectedOrder.orderStatus] || "bg-gray-200 text-gray-800"}`}>
-                {selectedOrder.orderStatus}
-              </span>
-            </div>
-
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   )
 }

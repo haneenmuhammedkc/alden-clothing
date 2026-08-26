@@ -6,7 +6,7 @@ export const getAllCustomers = async (req, res) => {
     const customers = await User.aggregate([
       { $lookup: { from: "orders", localField: "_id", foreignField: "user", as: "orders" } },
       { $addFields: { ordersCount: { $size: "$orders" } } },
-      { $project: { password: 0, orders: 0 } }
+      { $project: { password: 0, emailOtp: 0, emailOtpExpiry: 0, resetOtp: 0, resetOtpExpire: 0, orders: 0 } }
     ])
     res.json({ customers })
   } catch (error) {
@@ -17,7 +17,9 @@ export const getAllCustomers = async (req, res) => {
 // Get single customer
 export const getSingleCustomer = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password")
+    const user = await User.findById(req.params.id).select(
+      "-password -emailOtp -emailOtpExpiry -resetOtp -resetOtpExpire"
+    )
     if (!user) return res.status(404).json({ message: "User not found" })
     res.json({ user })
   } catch (error) {
@@ -34,7 +36,7 @@ export const blockUnblockCustomer = async (req, res) => {
       req.params.id,
       { status },
       { new: true }
-    )
+    ).select("-password -emailOtp -emailOtpExpiry -resetOtp -resetOtpExpire")
 
     res.json({ message: "Status updated", user })
   } catch (error) {

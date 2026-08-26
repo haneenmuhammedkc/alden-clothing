@@ -1,103 +1,121 @@
 import React from 'react'
-import { FaInstagram, FaFacebookF, FaTwitter , FaLinkedin , FaYoutube } from "react-icons/fa"
-import { assets } from "../assets/assets"
+import { Link } from 'react-router-dom'
+import { FaInstagram, FaTwitter, FaFacebookF, FaYoutube } from "react-icons/fa"
 
 const Footer = () => {
-
   const menuSections = [
-    { title: "Curation", items: ["New Arrivals", "Menswear", "Womenswear", "Accessories", "Archive"] },
-    { title: "The House", items: ["Our Story", "Sustainability", "Atelier", "Careers", "Investors"] },
-    { title: "Assistance", items: ["Shipping", "Returns", "Size Guide", "Care", "Contact"] }
+    { 
+      title: "CURATION", 
+      items: [
+        { name: "New Arrivals", path: "/men" }, 
+        { name: "Menswear", path: "/men" }, 
+        { name: "Womenswear", path: "/women" }, 
+        { name: "Kids Collection", path: "/kids" }
+      ] 
+    },
+    { 
+      title: "THE HOUSE", 
+      items: [
+        { name: "Our Story", path: "/" }, 
+        { name: "Sustainability", path: "/" }, 
+        { name: "Atelier", path: "/" }, 
+        { name: "Careers", path: "/" }
+      ] 
+    },
+    { 
+      title: "ASSISTANCE", 
+      items: [
+        { name: "Customer Support", path: "/myorder" }, 
+        { name: "Size Guide", path: "/men" }, 
+        { name: "Shipping & Returns", path: "/ourpolicy" }, 
+        { name: "Contact Us", path: "/" }
+      ] 
+    }
   ]
 
   return (
-    <footer className="relative bg-[#050505] text-white pt-10 pb-12 px-6 lg:px-20 overflow-hidden border-t border-white/5">
-      
-      {/* Dynamic Background Text */}
-      <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none opacity-[0.02]">
-        <span className="text-[25vw] font-black tracking-widest leading-none"> ALDEN </span>
-      </div>
-
-      <div className="max-w-350 mx-auto relative z-10">
+    <footer className="bg-[#F5EFE8] border-t border-[#DED4CB] text-[#30251F] pt-16 pb-12 px-4 md:px-8 font-sans">
+      <div className="max-w-[1320px] mx-auto space-y-12">
         
-        {/* Top Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end pb-20">
-          <div className="lg:col-span-7 space-y-8">
-            <img src={assets.logo} className='h-15' alt="" />
-            <p className="text-white/40 font-light text-base max-w-lg leading-relaxed">
-              A synthesis of classical elegance and digital-age performance. Each piece is an exploration of form, function, and the future.
+        {/* Main Footer Columns */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-10 pb-14 border-b border-[#DED4CB]">
+          
+          {/* Col 1: Brand Wordmark & Statement */}
+          <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-4">
+            <h3 className="text-xl font-bold tracking-tight text-[#30251F] font-sans">
+              ALDEN
+            </h3>
+            <p className="text-xs text-[#76675D] leading-relaxed">
+              Timeless fashion made for modern living. Premium quality, responsible choice, and refined aesthetic.
             </p>
+            <div className="flex items-center space-x-3 text-[#30251F]">
+              <a href="#" className="w-8 h-8 rounded-full bg-[#D8C4B4] flex items-center justify-center hover:bg-[#8B634B] hover:text-white transition-colors" aria-label="Instagram">
+                <FaInstagram className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-[#D8C4B4] flex items-center justify-center hover:bg-[#8B634B] hover:text-white transition-colors" aria-label="Twitter">
+                <FaTwitter className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-[#D8C4B4] flex items-center justify-center hover:bg-[#8B634B] hover:text-white transition-colors" aria-label="Facebook">
+                <FaFacebookF className="w-4 h-4" />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-[#D8C4B4] flex items-center justify-center hover:bg-[#8B634B] hover:text-white transition-colors" aria-label="Youtube">
+                <FaYoutube className="w-4 h-4" />
+              </a>
+            </div>
           </div>
-        </div>
 
-        {/* Middle Section */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 pb-15">
+          {/* Cols 2-4: Navigation Columns */}
           {menuSections.map((section, idx) => (
-            <div key={idx} className="space-y-8">
-              <h4 className="text-[11px] uppercase tracking-[0.4em] text-white/30 font-bold border-l-2 border-white/20 pl-4">
+            <div key={idx} className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#30251F]">
                 {section.title}
               </h4>
-              <ul className="flex flex-col gap-4">
-                {section.items.map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-[13px] font-light text-white/50 hover:text-white transition-all duration-500 flex items-center group overflow-hidden">
-                      <span className="relative inline-block">
-                        {item}
-                        <span className="absolute bottom-0 left-0 w-full h-px bg-white transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
-                      </span>
-                    </a>
+              <ul className="space-y-2 text-xs text-[#76675D]">
+                {section.items.map((item, itemIdx) => (
+                  <li key={itemIdx}>
+                    <Link to={item.path} className="hover:text-[#30251F] transition-colors">
+                      {item.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
 
-          <div className="col-span-2 space-y-12">
-            <div className="space-y-6">
-              <h4 className="text-[11px] uppercase tracking-[0.4em] text-white/30 font-bold border-l-2 border-white/20 pl-4">Network</h4>
-              <div className="flex gap-4">
-                <a href="#" className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-full hover:bg-white 
-                    hover:text-black hover:border-white transition-all duration-700 group">
-                  <FaInstagram className="w-4 h-4 opacity-80 group-hover:opacity-100 transition" />
-                </a>
+          {/* Col 5: Legal & Policy */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#30251F]">
+              LEGAL
+            </h4>
+            <ul className="space-y-2 text-xs text-[#76675D]">
+              <li><Link to="/ourpolicy" className="hover:text-[#30251F]">Privacy Policy</Link></li>
+              <li><Link to="/ourpolicy" className="hover:text-[#30251F]">Terms of Service</Link></li>
+              <li><Link to="/ourpolicy" className="hover:text-[#30251F]">Cookie Policy</Link></li>
+            </ul>
+          </div>
 
-                <a href="#" className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-full hover:bg-white
-                    hover:text-black hover:border-white transition-all duration-700 group">
-                  <FaTwitter className="w-4 h-4 opacity-80 group-hover:opacity-100 transition" />
-                </a>
+        </div>
 
-                <a href="#" className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-full hover:bg-white
-                    hover:text-black hover:border-white transition-all duration-700 group">
-                  <FaFacebookF className="w-4 h-4 opacity-80 group-hover:opacity-100 transition" />
-                </a>
-
-                <a href="#" className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-full hover:bg-white
-                    hover:text-black hover:border-white transition-all duration-700 group">
-                  <FaYoutube className="w-4 h-4 opacity-80 group-hover:opacity-100 transition" />
-                </a>
-                <a href="#" className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-full hover:bg-white
-                    hover:text-black hover:border-white transition-all duration-700 group">
-                  <FaLinkedin className="w-4 h-4 opacity-80 group-hover:opacity-100 transition" />
-                </a>
-              </div>
-            </div>
+        {/* Bottom Copyright & Payment Method Badges */}
+        <div className="pt-4 flex flex-col md:flex-row items-center justify-between text-xs text-[#76675D] space-y-4 md:space-y-0">
+          <p>© 2026 ALDEN & CO. ALL RIGHTS RESERVED.</p>
+          
+          <div className="flex items-center space-x-3">
+            <span className="px-2.5 py-1 bg-[#FBF9F6] text-[#30251F] font-bold text-[10px] rounded border border-[#DED4CB]">
+              RAZORPAY
+            </span>
+            <span className="px-2.5 py-1 bg-[#FBF9F6] text-[#30251F] font-bold text-[10px] rounded border border-[#DED4CB]">
+              VISA
+            </span>
+            <span className="px-2.5 py-1 bg-[#FBF9F6] text-[#30251F] font-bold text-[10px] rounded border border-[#DED4CB]">
+              MASTERCARD
+            </span>
+            <span className="px-2.5 py-1 bg-[#FBF9F6] text-[#30251F] font-bold text-[10px] rounded border border-[#DED4CB]">
+              ALDEN WALLET
+            </span>
           </div>
         </div>
 
-        {/* Bottom Section: Legal & Credits */}
-        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex gap-10">
-            {['Privacy Policy', 'Terms of Service', 'Cookie Directive'].map((legal) => (
-              <a key={legal} href="#" className="text-[10px] uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors">
-                {legal}
-              </a>
-            ))}
-          </div>
-
-          <div className="text-[10px] uppercase tracking-[0.3em] text-white/20 font-medium">
-            © 2025 <span className="text-white/40">ALDEN & CO.</span> ALL RIGHTS RESERVED.
-          </div>
-        </div>
       </div>
     </footer>
   )

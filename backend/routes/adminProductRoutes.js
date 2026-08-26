@@ -4,7 +4,7 @@ import authMiddleware from "../middleware/authMiddleware.js"
 
 const router = express.Router()
 
-router.use(authMiddleware())
+router.use(authMiddleware(["admin"]))
 
 router.post("/add", addProduct) // Add Product
 router.get("/", getActiveProducts) // Get Active Products

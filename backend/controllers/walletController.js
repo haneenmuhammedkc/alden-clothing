@@ -1,116 +1,66 @@
-import Wallet from "../models/Wallet.js"
-import Transaction from "../models/Transaction.js"
-import User from "../models/User.js"
+import {
+  fetchUserWallet,
+  creditUserWallet,
+  debitUserWallet
+} from "../services/walletService.js"
 
 export const getWallet = async (req, res) => {
   try {
-    let wallet = await Wallet.findOne({ user: req.user.id })
-
-    // Auto-create wallet, If missing
-    if (!wallet) {
-      wallet = await Wallet.create({
-        user: req.user.id,
-        balance: 0,
-        transactions: []
-      })
-    }
-
-    // Fetch user details
-    const user = await User.findById(req.user.id).select("name email")
-
-    res.json({
+    const data = await fetchUserWallet(req.user.id)
+    return res.json({
       success: true,
-      balance: wallet.balance,
-      transactions: wallet.transactions.reverse(),
-      user: {
-        name: user.name,
-        email: user.email
-      }
+      balance: data.balance,
+      transactions: data.transactions,
+      user: data.user
     })
   } catch (err) {
     console.error("Get Wallet Error:", err)
-    res.status(500).json({ message: err.message })
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({ message: err.message })
   }
 }
-
 
 export const creditWallet = async (req, res) => {
   try {
     const { amount, paymentId } = req.body
-
-    let wallet = await Wallet.findOne({ user: req.user.id })
-
-    // 🔥 AUTO-CREATE WALLET IF MISSING
-    if (!wallet) {
-      wallet = await Wallet.create({
-        user: req.user.id,
-        balance: 0,
-        transactions: []
-      })
-    }
-
-    // 1️⃣ Credit wallet
-    wallet.balance += Number(amount)
-
-    wallet.transactions.push({
-      type: "CREDIT",
-      amount: Number(amount),
-      label: "Fund Added",
-      reference: paymentId
+    const data = await creditUserWallet({
+      userId: req.user.id,
+      amount,
+      paymentId
     })
 
-    await wallet.save()
-
-    // 2️⃣ 🔹 Log unified transaction
-    await Transaction.create({
-      user: req.user.id,
-      type: "WALLET_CREDIT",
-      amount: Number(amount),
-      balanceAfter: wallet.balance,
-      description: "Wallet credited",
-      status: "SUCCESS"
-    })
-
-    res.json({
+    return res.json({
       success: true,
-      balance: wallet.balance
+      balance: data.balance
     })
   } catch (err) {
     console.error("Credit Wallet Error:", err)
-    res.status(500).json({ message: err.message })
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({
+      success: false,
+      message: err.message
+    })
   }
 }
 
 export const debitWallet = async (req, res) => {
   try {
     const { amount, orderId } = req.body
-
-    const wallet = await Wallet.findOne({ user: req.user.id })
-
-    if (!wallet) {
-      return res.status(404).json({ message: "Wallet not found" })
-    }
-
-    if (wallet.balance < amount) {
-      return res.status(400).json({ message: "Insufficient wallet balance" })
-    }
-
-    wallet.balance -= Number(amount)
-
-    wallet.transactions.push({
-      type: "DEBIT",
+    const data = await debitUserWallet({
+      userId: req.user.id,
       amount,
-      label: "Purchase",
-      reference: orderId
+      orderId
     })
 
-    await wallet.save()
-
-    res.json({
+    return res.json({
       success: true,
-      balance: wallet.balance
+      balance: data.balance
     })
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    const statusCode = err.statusCode || 500
+    return res.status(statusCode).json({
+      success: false,
+      message: err.message
+    })
   }
 }

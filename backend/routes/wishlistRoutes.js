@@ -1,38 +1,16 @@
 import express from "express"
-import Wishlist from "../models/Wishlist.js"
 import authMiddleware from "../middleware/authMiddleware.js"
+import { getWishlist, addWishlist, clearWishlist } from "../controllers/wishlistController.js"
 
 const router = express.Router()
 
-// ✅ Get wishlist
-router.get("/", authMiddleware(["user"]), async (req,res)=>{
-  try{
-    const wishlist = await Wishlist.findOne({user:req.user.id})
-    res.json(wishlist || {items:[]})
-  }catch(err){
-    res.status(500).json({message:"Failed to fetch wishlist"})
-  }
-})
+// Get wishlist for authenticated user
+router.get("/", authMiddleware(["user"]), getWishlist)
 
-// ✅ Save wishlist (replace items)
-router.post("/add", authMiddleware(["user"]), async (req,res)=>{
-  try{
-    let wishlist = await Wishlist.findOne({user:req.user.id})
+// Save / Sync wishlist
+router.post("/add", authMiddleware(["user"]), addWishlist)
 
-    if(!wishlist){
-      wishlist = new Wishlist({
-        user:req.user.id,
-        items:[]
-      })
-    }
-
-    wishlist.items = req.body.items
-    await wishlist.save()
-
-    res.json(wishlist)
-  }catch(err){
-    res.status(500).json({message:"Failed to update wishlist"})
-  }
-})
+// Clear wishlist for authenticated user
+router.delete("/clear", authMiddleware(["user"]), clearWishlist)
 
 export default router

@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate } from "react"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
+import Button from "../component/Button"
+import Badge from "../component/Badge"
+import Invoice from "../component/Invoice"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
-import Invoice from "../component/Invoice"
-import { motion, AnimatePresence } from "framer-motion"
-import { FiArrowLeft } from "react-icons/fi"
+import { ArrowLeft, Download, CheckCircle2, Clock, Package, Truck, XCircle } from "lucide-react"
 import axiosInstance from "../utils/axiosInstance"
 
-// Order Timeline Config
 const ORDER_STEPS = [
   { key: "pending", label: "Order Placed" },
   { key: "processing", label: "Processing" },
@@ -17,52 +17,48 @@ const ORDER_STEPS = [
   { key: "delivered", label: "Delivered" },
 ]
 
-// Futuristic Timeline
 const OrderTimeline = ({ status, createdAt }) => {
   const isCancelled = status === "cancelled"
-  const currentIndex = isCancelled
-    ? 0
-    : ORDER_STEPS.findIndex((step) => step.key === status)
+  const currentIndex = isCancelled ? 0 : ORDER_STEPS.findIndex((step) => step.key === status)
 
   return (
-    <div className="bg-white border border-black/10 p-8 relative overflow-hidden group">
-      <h3 className="text-xs font-bold tracking-[0.2em] uppercase mb-10 text-black/40">
-        Tracking Protocol
+    <div className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[10px] p-6 space-y-6 shadow-xs font-sans">
+      <h3 className="text-xs font-bold uppercase tracking-wider text-[#30251F] pb-3 border-b border-[#DED4CB]">
+        ORDER FULFILLMENT TIMELINE
       </h3>
 
-      <div className="space-y-10">
+      <div className="space-y-4">
         {ORDER_STEPS.map((step, index) => {
           if (isCancelled && index > 0) return null
           const isCompleted = index <= currentIndex
-          const isCurrent = index === currentIndex
 
           return (
-            <motion.div key={step.key} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-6">
-              <div className={`w-4 h-4 rounded-full border-2 ${ isCompleted
-                ? "bg-black border-black scale-110"
-                : "bg-white border-black/20"
-                }`}/>
-
-              <div>
-                <p className={`text-sm font-bold uppercase tracking-tight ${ isCompleted ? "text-black" : "text-gray-300" }`}>
+            <div key={step.key} className="flex items-center space-x-4">
+              <div
+                className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
+                  isCompleted ? "bg-[#8B634B] border-[#8B634B]" : "bg-[#F5EFE8] border-[#DED4CB]"
+                }`}
+              />
+              <div className="flex-1 flex justify-between items-center text-xs">
+                <span className={`font-semibold uppercase ${isCompleted ? "text-[#30251F]" : "text-[#76675D]/60"}`}>
                   {step.label}
-                </p>
-
+                </span>
                 {index === 0 && (
-                  <p className="text-[10px] font-mono text-gray-400 mt-1 uppercase"> {new Date(createdAt).toDateString()} </p>
+                  <span className="text-[11px] text-[#76675D]">
+                    {new Date(createdAt).toLocaleDateString()}
+                  </span>
                 )}
               </div>
-            </motion.div>
+            </div>
           )
         })}
 
         {isCancelled && (
-          <div className="flex items-start gap-6">
-            <div className="w-4 h-4 rounded-full bg-red-500" />
-            <div>
-              <p className="text-sm font-bold uppercase text-red-600"> Order Voided </p>
-              <p className="text-[10px] font-mono text-gray-400"> {new Date(createdAt).toDateString()} </p>
+          <div className="flex items-center space-x-4">
+            <div className="w-3.5 h-3.5 rounded-full bg-[#8C2727] border border-[#8C2727] shrink-0" />
+            <div className="flex-1 flex justify-between items-center text-xs">
+              <span className="font-semibold uppercase text-[#8C2727]">ORDER CANCELLED</span>
+              <span className="text-[11px] text-[#76675D]">{new Date(createdAt).toLocaleDateString()}</span>
             </div>
           </div>
         )}
@@ -71,6 +67,10 @@ const OrderTimeline = ({ status, createdAt }) => {
   )
 }
 
+/**
+ * OrderDetails — Alden Clothing Timeless Editorial Luxury Order Details & PDF Invoice Page
+ * Preserves 100% of html2canvas + jsPDF invoice generation logic.
+ */
 const OrderDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -79,19 +79,13 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Fetch single order details
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const token = localStorage.getItem("userToken")
-        const res = await axiosInstance.get(
-          `/api/orders/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const res = await axiosInstance.get(`/api/orders/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
         setOrder(res.data.data)
       } catch (error) {
         console.error("Fetch Order Error:", error)
@@ -102,7 +96,7 @@ const OrderDetails = () => {
     fetchOrder()
   }, [id])
 
-  // Generate and download invoice as a PDF
+  // PDF Invoice Generation Handler
   const handleDownloadInvoice = async () => {
     const element = invoiceRef.current
     if (!element) return
@@ -111,7 +105,7 @@ const OrderDetails = () => {
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
-      backgroundColor: "#ffffff",
+      backgroundColor: "#ffffff"
     })
 
     const imgData = canvas.toDataURL("image/jpeg", 1.0)
@@ -136,142 +130,159 @@ const OrderDetails = () => {
       heightLeft -= pageHeight
     }
 
-    pdf.save(`invoice-${order._id}.pdf`)
+    pdf.save(`alden-invoice-${order._id}.pdf`)
   }
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-px bg-black animate-pulse" />
-          <p className="text-[10px] font-mono tracking-[0.3em] uppercase">
-            Synchronizing
-          </p>
+      <div className="min-h-screen bg-[#F5EFE8] flex flex-col justify-between">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center py-24 space-y-3 font-sans">
+          <div className="w-8 h-8 border-2 border-[#DED4CB] border-t-[#8B634B] rounded-full animate-spin" />
+          <p className="text-xs uppercase tracking-widest text-[#76675D]">Loading Order Manifest...</p>
         </div>
+        <Footer />
       </div>
     )
   }
 
-  if (!order) return <p className="p-20">Order not found</p>
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-[#F5EFE8] flex flex-col justify-between font-sans">
+        <Navbar />
+        <div className="text-center py-24 space-y-4">
+          <h2 className="text-2xl font-serif text-[#30251F]">ORDER NOT FOUND</h2>
+          <Button variant="primary" onClick={() => navigate("/myorder")}>RETURN TO ORDERS</Button>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-white text-black selection:bg-black selection:text-white">
+    <div className="bg-[#F5EFE8] min-h-screen text-[#30251F] font-sans selection:bg-[#8B634B] selection:text-white">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24 font-sans">
+      <main className="max-w-[1320px] mx-auto px-4 md:px-8 py-12">
+        
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-6 border-b border-[#DED4CB]">
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => navigate("/myorder")}
+              className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-[#76675D] hover:text-[#30251F] transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>RETURN TO ORDER HISTORY</span>
+            </button>
 
-        {/* Header Section */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative mb-10">
-          <div className="flex items-start gap-6">
-            <motion.button whileHover={{ x: -5 }} onClick={() => navigate("/myorder")}
-              className="p-3 border border-black rounded-full cursor-pointer hover:bg-black/5 hover:text-black transition-all">
-              <FiArrowLeft />
-            </motion.button>
-            <div>
-              <h1 className="text-4xl md:text-4xl font-black tracking-tighter uppercase leading-none">
-                Order <span className="text-gray-500">Details</span>
-              </h1>
-            </div>
+            <h1 className="text-3xl sm:text-4xl font-serif font-normal text-[#30251F]">
+              ORDER #{order._id.slice(-6).toUpperCase()}
+            </h1>
           </div>
-        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <Button variant="primary" onClick={handleDownloadInvoice} className="text-xs">
+            <span className="flex items-center space-x-2">
+              <Download className="w-4 h-4" />
+              <span>DOWNLOAD OFFICIAL INVOICE</span>
+            </span>
+          </Button>
+        </div>
 
-          {/* Left Section */}
-          <div className="lg:col-span-8 space-y-12">
-
-            {/* Products List */}
-            <div className="space-y-6">
-              {order.items.map((item, index) => (
-                <motion.div key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }}
-                  className="flex flex-col md:flex-row gap-10 items-start border-b border-black/5 pb-8">
-
-                  {/* Image */}
-                  <div className="w-full md:w-64 aspect-square bg-gray-50 border border-black/5 flex items-center justify-center p-8">
-                    <motion.img whileHover={{ scale: 1.05 }} src={item.image} alt={item.name}
-                      className="w-full h-full object-contain grayscale hover:grayscale-0 transition-all duration-700"/>
+        {/* 8:4 Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          {/* Left Column (8 Columns: Items & Timeline) */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            {/* Itemized Order Products */}
+            <div className="space-y-3">
+              {order.items.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[10px] p-4 flex items-center space-x-4 shadow-xs"
+                >
+                  <img src={item.image} alt={item.name} className="w-16 h-20 object-cover rounded-[6px] bg-[#F5EFE8] border border-[#DED4CB]/60 shrink-0" />
+                  <div className="flex-1 space-y-1">
+                    <h3 className="text-sm font-semibold text-[#30251F]">{item.name}</h3>
+                    <p className="text-xs text-[#76675D]">QTY: {item.quantity || item.qty}</p>
+                    <p className="text-xs font-semibold text-[#8B634B]">₹{(item.price || 0).toLocaleString('en-IN')}</p>
                   </div>
-
-                  {/* Info */}
-                  <div className="flex-1 space-y-4">
-                    <h2 className="text-2xl font-bold uppercase italic"> {item.name} </h2>
-                    <div className="text-lg font-light"> Qty: {item.quantity} </div>
-                    <div className="text-2xl"> ₹ {item.price} </div>
-                  </div>
-                </motion.div>
+                </div>
               ))}
             </div>
 
-            {/* Download Invoice Button) */}
-            <button onClick={handleDownloadInvoice} className="px-6 py-3 bg-black text-white text-[10px] font-bold uppercase
-              tracking-[0.2em] hover:bg-white hover:text-black border border-black transition-all duration-300">
-              Generate Invoice
-            </button>
-            <OrderTimeline status={order.orderStatus} createdAt={order.createdAt}/>
+            {/* Timeline */}
+            <OrderTimeline status={order.orderStatus} createdAt={order.createdAt} />
+
           </div>
 
-          {/* Right Section */}
-          <div className="lg:col-span-4 space-y-8">
-            <section className="border-t-2 border-black pt-6">
-              <h3 className="text-xs font-bold uppercase tracking-[0.3em] mb-6">
-                Logistic Details
+          {/* Right Column (4 Columns: Address & Total Summary) */}
+          <div className="lg:col-span-4 space-y-6 sticky top-24">
+            
+            {/* Delivery Destination */}
+            <div className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[10px] p-6 space-y-2 shadow-xs">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#30251F] pb-2 border-b border-[#DED4CB]">
+                DELIVERY DESTINATION
               </h3>
-              <p className="text-sm uppercase">
-                {order.customer.firstName} {order.customer.lastName}
+              <p className="text-xs font-semibold uppercase text-[#30251F]">
+                {order.customer?.firstName} {order.customer?.lastName}
               </p>
-              <p className="text-sm text-black/60">
-                {order.customer.address.line}
+              <p className="text-xs text-[#76675D]">
+                {order.customer?.address?.line}, {order.customer?.address?.city}
               </p>
-              <p className="text-sm text-black/60">
-                {order.customer.address.city},{" "}
-                {order.customer.address.state}
+              <p className="text-xs text-[#76675D]">
+                {order.customer?.address?.state} — {order.customer?.address?.pincode}
               </p>
-              <p className="text-sm text-black/60">
-                {order.customer.address.pincode}
+              <p className="text-[11px] text-[#76675D] pt-1">
+                PHONE: {order.customer?.phone}
               </p>
-              <p className="text-[10px] font-mono text-black/40 mt-4">
-                PHONE: {order.customer.phone}
-              </p>
-            </section>
+            </div>
 
-            <section className="bg-black text-white p-8 space-y-6">
-              <h3 className="text-[10px] font-mono uppercase tracking-[0.4em] text-white/50">
-                Final
+            {/* Price Calculations */}
+            <div className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[10px] p-6 space-y-3 shadow-xs">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#30251F] pb-2 border-b border-[#DED4CB]">
+                PAYMENT BREAKDOWN
               </h3>
 
-              <div className="space-y-4">
-                <div className="flex justify-between text-xs uppercase">
-                  <span className="text-white/40">Subtotal</span>
-                  <span>₹ {order.subtotal}</span>
+              <div className="space-y-2 text-xs text-[#76675D]">
+                <div className="flex justify-between">
+                  <span>SUBTOTAL</span>
+                  <span className="font-semibold text-[#30251F]">₹{(order.subtotal || 0).toLocaleString('en-IN')}</span>
                 </div>
-
-                <div className="flex justify-between text-xs uppercase">
-                  <span className="text-white/40">Tax</span>
-                  <span>₹ {order.tax}</span>
+                <div className="flex justify-between">
+                  <span>TAX</span>
+                  <span className="font-semibold text-[#30251F]">₹{(order.tax || 0).toLocaleString('en-IN')}</span>
                 </div>
-
-                <div className="flex justify-between text-xs uppercase border-b border-white/10 pb-4">
-                  <span className="text-white/40">Shipping</span>
-                  <span>₹ {order.shipping}</span>
-                </div>
-
-                <div className="flex justify-between items-baseline pt-2">
-                  <span className="text-[10px] font-mono uppercase">
-                    Total Value
+                <div className="flex justify-between">
+                  <span>SHIPPING</span>
+                  <span className="font-semibold text-[#30251F]">
+                    {order.shipping === 0 ? "COMPLIMENTARY" : `₹${order.shipping}`}
                   </span>
-                  <span className="text-3xl font-bold italic">
-                    ₹ {order.total}
-                  </span>
+                </div>
+                {order.discount > 0 && (
+                  <div className="flex justify-between text-[#2D5A27] font-semibold">
+                    <span>DISCOUNT</span>
+                    <span>- ₹{order.discount.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+                <div className="pt-3 border-t border-[#DED4CB] flex justify-between items-baseline text-sm text-[#30251F] font-bold">
+                  <span>FINAL TOTAL</span>
+                  <span className="text-xl text-[#8B634B]">₹{(order.total || 0).toLocaleString('en-IN')}</span>
                 </div>
               </div>
-            </section>
+            </div>
+
           </div>
+
         </div>
 
-        {/* Hidden Invoice */}
+        {/* Hidden Invoice DOM Container for html2canvas */}
         <div style={{ position: "absolute", left: "-9999px", top: "0", width: "800px", background: "#ffffff", opacity: 1 }}>
           <Invoice ref={invoiceRef} order={order} />
         </div>
+
       </main>
 
       <Footer />

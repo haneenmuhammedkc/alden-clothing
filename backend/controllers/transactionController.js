@@ -1,12 +1,24 @@
-import Transaction from "../models/Transaction.js"
+import {
+  fetchUserTransactions,
+  fetchAllAdminTransactions
+} from "../services/transactionService.js"
 
 export const getMyTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ user: req.user.id })
-      .sort({ createdAt: -1 })
-
-    res.json({ transactions })
+    const transactions = await fetchUserTransactions(req.user.id)
+    return res.json({ success: true, transactions })
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch transactions" })
+    const statusCode = error.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: error.message || "Failed to fetch transactions" })
+  }
+}
+
+export const getAllTransactions = async (req, res) => {
+  try {
+    const transactions = await fetchAllAdminTransactions()
+    return res.json({ success: true, transactions })
+  } catch (error) {
+    const statusCode = error.statusCode || 500
+    return res.status(statusCode).json({ success: false, message: error.message || "Failed to fetch all transactions" })
   }
 }

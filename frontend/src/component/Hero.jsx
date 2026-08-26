@@ -1,93 +1,62 @@
-import React, { useState, useEffect } from 'react'
-import { assets } from "../assets/assets"
+import React from 'react'
 import { Link } from 'react-router-dom'
+import { assets } from "../assets/assets"
 
 const Hero = () => {
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
-
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center font-sans pt-20">
-
-      {/* Background Section */}
-      <div className="absolute inset-0 z-0">
-
-        {/* Image */}
-        <img src={assets.main_img} alt="Alden Campaign" className="w-full h-full object-cover opacity-60 filter grayscale contrast-125 scale-105"
-          onError={(e) => { e.target.src = 'https://via.placeholder.com/1920x1080?text=Alden+Campaign' }}/>
+    <section className="bg-[#F5EFE8] text-[#30251F] font-sans px-4 md:px-8 pt-6 pb-12">
+      <div className="max-w-[1320px] mx-auto rounded-[24px] lg:rounded-[36px] bg-[#D8C4B4] border border-[#B7A08D]/40 p-8 lg:p-14 shadow-xs relative">
         
-        {/* Vignette Effect */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_90%)]"></div>
-      </div>
-
-      {/* Scanning Line */}
-      <div className="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-white/40 to-transparent 
-        shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-[scan_8s_linear_infinite] z-10"></div>
-
-      {/* Content Section */}
-      <div className={`relative z-20 container mx-auto px-6 flex flex-col items-center transition-all duration-1000 
-        transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        
-        {/* Top Element */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="h-px w-6 bg-white/30"></div>
-          <p className="text-xs tracking-widest text-white/80 font-light"> FW / / 2026 / / SIGNATURE SILHOUETTE </p>
-          <div className="h-px w-6 bg-white/30"></div>
-        </div>
-
-        {/* Main Text */}
-        <div className="relative group text-center">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl text-white font-bold leading-none mb-4 tracking-tighter">
-            SIGNATURE
-            <br />
-            <span className="relative inline-block text-transparent bg-clip-text bg-linear-to-b from-white to-gray-500">
-              STYLE
-              <span className="absolute -bottom-2 left-0 w-full h-px bg-white/20 origin-left scale-x-0 group-hover:scale-x-100
-                transition-transform duration-700"></span>
-            </span>
-          </h1>          
-        </div>
-
-        {/* Description */}
-        <p className="max-w-md text-gray-400 text-center text-xs tracking-widest leading-loose mb-12 uppercase">
-          Modern heritage, reimagined with precision.
-          <br />
-          Sculpted silhouettes. Intelligent comfort.
-        </p>
-
-        {/* Buttons ( MEN / WOMEN ) */}
-        <div className="flex flex-col md:flex-row gap-6 items-center">
-          <Link to="/men" className="group relative px-12 py-4 overflow-hidden bg-black transition-all duration-500
-            hover:bg-white text-center">
-            <span className="relative z-10 text-white text-[10px] font-bold tracking-[0.3em] group-hover:text-black transition-all">
-              SHOP MEN
-            </span>
-            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-          </Link>
-
-          <Link to="/women" className="group relative px-12 py-4 overflow-hidden bg-white transition-all duration-500
-            hover:bg-blacktext-center">
-            <span className="relative z-10 text-black text-[10px] font-bold tracking-[0.3em] group-hover:text-white transition-all">
-              SHOP WOMEN
-            </span>
-            <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-          </Link>
-        </div>
-
-        {/* Bottom Coordinates / Branding Decoration */}
-        <div className="mt-20 w-full flex justify-between items-end opacity-20 pointer-events-none px-4 text-[10px] font-mono text-white">
-          <div className="flex flex-col gap-1">
-            <span>LAT: 40.7128° N</span>
-            <span>LNG: 74.0060° W</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[460px] lg:min-h-[500px]">
+          
+          {/* HERO LEFT: EDITORIAL FASHION PHOTOGRAPHY */}
+          <div className="lg:col-span-6 h-[360px] sm:h-[420px] lg:h-[480px] rounded-[20px] lg:rounded-[32px] overflow-hidden bg-[#B7A08D] shadow-xs">
+            <img
+              src={assets.main_img}
+              alt="Alden Clothing Editorial Campaign"
+              className="w-full h-full object-cover object-top"
+              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1400&q=80' }}
+            />
           </div>
-          <div className="flex flex-col gap-1 text-right">
-            <span>SYSTEM_BUILD: V.03</span>
-            <span>CORE_PROTOCOL</span>
+
+          {/* HERO RIGHT: EDITORIAL TYPOGRAPHY & CTAS */}
+          <div className="lg:col-span-6 space-y-6 lg:pl-4">
+            
+            <div className="space-y-3">
+              <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#8B634B]">
+                NEW COLLECTION
+              </span>
+              
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight text-[#30251F] leading-[1.02]">
+                TIMELESS PIECES FOR<br />
+                <span className="italic">MODERN LIVING</span>
+              </h1>
+            </div>
+
+            <p className="text-sm sm:text-base text-[#76675D] font-normal leading-relaxed max-w-md">
+              Discover refined everyday essentials designed with understated elegance, architectural proportion, and premium natural fabrics.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-4">
+              <Link 
+                to="/men" 
+                className="px-8 py-3.5 bg-[#8B634B] text-white text-xs font-semibold uppercase tracking-wider rounded-[8px] hover:bg-[#30251F] transition-colors shadow-xs"
+              >
+                SHOP MEN
+              </Link>
+              <Link 
+                to="/women" 
+                className="px-8 py-3.5 bg-[#FBF9F6] text-[#30251F] border border-[#30251F] text-xs font-semibold uppercase tracking-wider rounded-[8px] hover:bg-[#30251F] hover:text-white transition-colors"
+              >
+                SHOP WOMEN
+              </Link>
+            </div>
+
           </div>
+
         </div>
+
       </div>
     </section>
   )

@@ -1,65 +1,53 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
+import Button from './Button'
 
 const Jackets = () => {
+  const navigate = useNavigate()
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black font-sans selection:bg-white selection:text-black">
-      
-      {/* Background Layer */}
-      <div className="absolute inset-0 z-0">
-        <img className="w-full h-full object-cover grayscale contrast-125 scale-105 animate-slow-zoom" src={assets.Jac1} 
-          alt="Premium Jacket Collection"/>
-        <div className="absolute inset-0 bg-linear-to-r from-black via-black/40 to-transparent"></div>
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),
-          linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-size-[40px_40px]"></div>
-      </div>
-
-      {/* Content Section */}
-      <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-20 lg:px-32">
+    <section className="px-4 md:px-8 py-8 bg-[#F5EFE8] text-[#30251F] font-sans">
+      <div className="max-w-[1320px] mx-auto rounded-[24px] lg:rounded-[36px] bg-[#D8C4B4] border border-[#B7A08D]/40 p-8 lg:p-14 shadow-xs relative overflow-hidden">
         
-        {/* Animated Line */}
-        <div className="w-16 h-0.5 bg-white mb-8 animate-extend-line"></div>
-        <div className="max-w-4xl space-y-6">
-
-          {/* Header */}
-          <div className="overflow-hidden">
-            <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-none animate-reveal-up">
-              OUTERWEAR <br />
-              <span className="text-transparent stroke-text">LAB SERIES</span>
-            </h1>
-          </div>
-
-          {/* Subtext */}
-          <p className="text-gray-300 text-sm md:text-base max-w-lg leading-relaxed tracking-wide opacity-0 animate-fade-in-up delay-300">
-            ENGINEERED FOR THE ELEMENTS. CRAFTED FROM HIGH-DENSITY WOOL, 
-            VEGAN LEATHER, AND ARCHIVAL WAXED COTTON. RUGGED PROTECTION 
-            MEETS MONOCHROMATIC MINIMALISM.
-          </p>
-
-          {/* Button Section */}
-          <div className="pt-6 opacity-0 animate-fade-in-up delay-500">
-            <button className="group relative px-10 py-4 bg-white text-black text-xs font-bold tracking-[0.3em] overflow-hidden
-              transition-all duration-500 hover:text-white">
-              <span className="relative z-10">EXPLORE COLLECTION</span>
-              <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          
+          {/* Banner Copy */}
+          <div className="md:col-span-7 space-y-4 text-center md:text-left">
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#8B634B]">
+              AUTUMN EDITORIAL
+            </span>
             
-            {/* Bottom Texts */}
-            <div className="mt-12 flex items-center gap-6 text-[10px] text-gray-500 tracking-[0.2em] cursor-crosshair">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                LIMITED EDITION
-              </span>
-              <span>/</span>
-              <span>EST. 2024</span>
-              <span>/</span>
-              <span>001-JACKETS</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-normal tracking-tight text-[#30251F]">
+              THE ART OF EVERYDAY DRESS
+            </h2>
+            
+            <p className="text-sm text-[#76675D] leading-relaxed max-w-lg">
+              Explore unstructured outerwear, high-density wool jackets, and unlined linen tailoring designed for effortless transitional layering.
+            </p>
+
+            <div className="pt-2">
+              <Button
+                variant="primary"
+                onClick={() => navigate('/men')}
+              >
+                EXPLORE COLLECTION
+              </Button>
             </div>
           </div>
-        </div>
-      </div>
 
+          {/* Banner Campaign Image */}
+          <div className="md:col-span-5 h-64 md:h-80 rounded-[20px] overflow-hidden bg-[#B7A08D] shadow-sm">
+            <img
+              src={assets.Jac1 || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=80"}
+              alt="Alden Outerwear Campaign"
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+
+        </div>
+
+      </div>
     </section>
   )
 }

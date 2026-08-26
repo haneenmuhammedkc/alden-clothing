@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react"
 import Navbar from "../component/Navbar"
 import Footer from "../component/Footer"
-import { FiEdit, FiLogOut, FiLock, FiPackage, FiCreditCard, FiRepeat, FiX, FiChevronRight, FiUser, FiMail, FiPhone } from "react-icons/fi"
-import { useNavigate } from "react-router-dom"
+import Button from "../component/Button"
+import Input from "../component/Input"
+import Modal from "../component/Modal"
 import AddressSection from "../component/AddressSection"
+import { Edit, LogOut, Lock, Package, CreditCard, Repeat, Mail, Phone, User as UserIcon } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { showConfirm, showSuccess } from "../utils/alerts"
-import { motion, AnimatePresence } from "framer-motion"
 import axiosInstance from "../utils/axiosInstance"
 
+/**
+ * Profile — Alden Clothing Timeless Editorial Luxury Customer Profile Workspace
+ * 2-column desktop workspace (Identity & Navigation on left, Addresses on right).
+ */
 const Profile = () => {
   const getInitials = (name = "") => {
     return name
@@ -26,15 +32,13 @@ const Profile = () => {
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" })
   const [passwordError, setPasswordError] = useState("")
 
-  // To Fetch Logged-In User Details
+  // Fetch Logged-In User Details
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("userToken")
         const res = await axiosInstance.get("/api/users/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         })
         setUser(res.data.user)
       } catch (error) {
@@ -44,24 +48,25 @@ const Profile = () => {
     fetchProfile()
   }, [])
 
-  // To Ensure token exists before allowing profile access
+  // Check auth token
   useEffect(() => {
     const token = localStorage.getItem("userToken")
-    if(!token){
+    if (!token) {
       navigate("/login")
     }
-  }, [])
+  }, [navigate])
 
-  // To Change User Password
+  // Change Password Handler
   const handleChangePassword = async () => {
-    if(
-      !passwordData.currentPassword ||
-      !passwordData.newPassword ||
-      !passwordData.confirmPassword
-    ){return setPasswordError("All fields are required")}
-
-    if(passwordData.newPassword !== passwordData.confirmPassword){return setPasswordError("New passwords do not match")}
-    if (passwordData.newPassword.length < 6) {return setPasswordError("Password must be at least 6 characters")}
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      return setPasswordError("All fields are required")
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      return setPasswordError("New passwords do not match")
+    }
+    if (passwordData.newPassword.length < 6) {
+      return setPasswordError("Password must be at least 6 characters")
+    }
 
     try {
       const token = localStorage.getItem("userToken")
@@ -69,24 +74,18 @@ const Profile = () => {
         "/api/users/change-password",
         {
           currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword,
+          newPassword: passwordData.newPassword
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       setShowPasswordModal(false)
       alert("Password updated successfully")
-    } catch(error){
-      setPasswordError(
-        error.response?.data?.message || "Failed to update password",
-      )
+    } catch (error) {
+      setPasswordError(error.response?.data?.message || "Failed to update password")
     }
   }
 
-  // To Upload Profile Image to Cloudinary
+  // Upload Profile Image to Cloudinary
   const uploadImageToCloudinary = async (file) => {
     const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
     const PRESET = import.meta.env.VITE_CLOUDINARY_PRESET
@@ -100,68 +99,73 @@ const Profile = () => {
       { method: "POST", body: formData }
     )
     const data = await res.json()
-    if(!res.ok){
+    if (!res.ok) {
       throw new Error(data.error?.message || "Upload failed")
     }
     return data.secure_url
   }
 
-  // For Edit Profile Details
+  // Update Profile Details Handler
   const handleUpdateProfile = async () => {
     try {
       const token = localStorage.getItem("userToken")
       let imageUrl = user?.profileImage || ""
 
-      // Upload to cloudinary first
-      if (editData.image) { imageUrl = await uploadImageToCloudinary(editData.image) }
+      if (editData.image) {
+        imageUrl = await uploadImageToCloudinary(editData.image)
+      }
       const res = await axiosInstance.put(
         "/api/users/me",
         { name: editData.name, phone: editData.phone, profileImage: imageUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
       setUser(res.data.user)
       setShowEditModal(false)
-    } catch(err){
+    } catch (err) {
       console.error(err)
     }
   }
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white font-sans selection:bg-white selection:text-black">
+    <div className="bg-[#F5EFE8] min-h-screen text-[#30251F] font-sans selection:bg-[#8B634B] selection:text-white">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
-
-        {/* Header Section */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <main className="max-w-[1320px] mx-auto px-4 md:px-8 py-12">
+        
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-[#DED4CB]">
           <div>
-            <h1 className="text-5xl font-black tracking-tighter mb-2 italic">ACCOUNT.</h1>
-            <div className="flex items-center gap-2">
-              <p className="text-[10px] tracking-[0.4em] text-gray-500 uppercase">Personal Terminal / Access Level 01</p>
-            </div>
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#8B634B]">
+              ACCOUNT DASHBOARD
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-serif font-normal text-[#30251F]">
+              CUSTOMER PROFILE
+            </h1>
           </div>
 
-          <div className="flex items-center gap-6">
-
-            {/* Change Password Button */}
-            <button onClick={() => {
+          <div className="flex items-center space-x-4">
+            <button
+              type="button"
+              onClick={() => {
                 setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
                 setPasswordError("")
                 setShowPasswordModal(true)
               }}
-              className="group flex items-center gap-2 text-[10px] tracking-widest text-gray-400 hover:text-white transition-all cursor-pointer">
-              <span className="group-hover:rotate-12 transition-transform"><FiLock /></span> CHANGE PASSWORD
+              className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-[#76675D] hover:text-[#30251F] transition-colors cursor-pointer"
+            >
+              <Lock className="w-4 h-4 text-[#8B634B]" />
+              <span>CHANGE PASSWORD</span>
             </button>
-            <div className="h-4 w-px bg-white/10"></div>
 
-            {/* Sign Out Button */}
-            <button onClick={async () => { const result = await showConfirm( "Sign Out",
-              "Are you sure you want to sign out of your account?" )
+            <span className="text-[#DED4CB]">|</span>
+
+            <button
+              type="button"
+              onClick={async () => {
+                const result = await showConfirm(
+                  "Sign Out",
+                  "Are you sure you want to sign out of your account?"
+                )
                 if (result.isConfirmed) {
                   localStorage.removeItem("userToken")
                   showSuccess("Signed Out", "You have been logged out").then(() => {
@@ -169,189 +173,162 @@ const Profile = () => {
                   })
                 }
               }}
-              className="group flex items-center gap-2 text-[10px] tracking-widest text-red-500 hover:text-red-400 transition-all cursor-pointer">
-              <span className="group-hover:translate-x-1 transition-transform"><FiLogOut /></span> SIGN OUT
+              className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-[#8C2727] hover:underline cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>SIGN OUT</span>
             </button>
           </div>
-        </motion.div>
+        </div>
 
+        {/* 2-Column Grid Workspace */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
-          {/* Left Section */}
+          {/* Left Column (8 Columns: Identity Card & Navigation Cards) */}
           <div className="lg:col-span-8 space-y-8">
             
-            {/* Identity Card */}
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}
-              className="relative overflow-hidden bg-white/3 border border-white/10 rounded-3xl p-8 group">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                <FiUser size={120} />
+            {/* Customer Identity Card */}
+            <div className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[12px] p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-xs relative">
+              <div className="relative group">
+                <div className="w-28 h-28 rounded-full bg-[#F5EFE8] border border-[#DED4CB] flex items-center justify-center overflow-hidden shrink-0">
+                  {user?.profileImage ? (
+                    <img src={user.profileImage} alt="Profile Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-serif text-[#8B634B] font-bold">{getInitials(user?.name)}</span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditData({ name: user?.name || "", phone: user?.phone || "", image: null })
+                    setShowEditModal(true)
+                  }}
+                  className="absolute bottom-0 right-0 bg-[#8B634B] text-white p-2 rounded-full shadow-xs hover:bg-[#30251F] transition-colors cursor-pointer"
+                  title="Edit Profile"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                </button>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
-              
-                {/* Profile Image */}
-                <div className="relative group/avatar">
-                  <div className="w-40 h-40 rounded-full bg-linear-to-b from-white to-gray-800 p-px">
-                    <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
-                      {user?.profileImage ? (
-                        <img src={user.profileImage} alt="avatar" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
-                      ) : (
-                        <span className="text-4xl font-light tracking-widest">{getInitials(user?.name)}</span>
-                      )}
-                    </div>
-                  </div>
-                  <button onClick={() => { setEditData({ name: user?.name || "", phone: user?.phone || "", image: null })
-                      setShowEditModal(true)
-                    }} className="absolute bottom-1 right-1 bg-white text-black p-3 rounded-full shadow-xl scale-0 cursor-pointer
-                        group-hover/avatar:scale-100 transition-transform duration-300">
-                    <FiEdit />
-                  </button>
-                </div>
-
-                {/* User Details Section */}
-                <div className="text-center md:text-left">
-
-                  {/* UserName */}
-                  <h2 className="text-3xl font-bold tracking-tight uppercase mb-4 leading-none">
-                    {user?.name || "Initializing..."}
-                  </h2>
-
-                  {/* User Email and Phone */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-center md:justify-start gap-3 text-gray-400">
-                      <span className="text-white/40"><FiMail /></span>
-                      <span className="text-xs tracking-wider">{user?.email}</span>
-                    </div>
-                    <div className="flex items-center justify-center md:justify-start gap-3 text-gray-400">
-                      <span className="text-white/40"><FiPhone /></span>
-                      <span className="text-xs tracking-wider">{user?.phone || "No phone linked"}</span>
-                    </div>
-                  </div>
+              <div className="space-y-2 text-center sm:text-left flex-1">
+                <h2 className="text-2xl font-serif font-normal text-[#30251F] uppercase">
+                  {user?.name || "AUTHENTICATED CLIENT"}
+                </h2>
+                <div className="space-y-1 text-xs text-[#76675D]">
+                  <p className="flex items-center justify-center sm:justify-start space-x-2">
+                    <Mail className="w-3.5 h-3.5 text-[#8B634B]" />
+                    <span>{user?.email}</span>
+                  </p>
+                  <p className="flex items-center justify-center sm:justify-start space-x-2">
+                    <Phone className="w-3.5 h-3.5 text-[#8B634B]" />
+                    <span>{user?.phone || "No phone connected"}</span>
+                  </p>
                 </div>
               </div>
-            </motion.div>
-
-            {/* Navigation Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { label: "ORDERS", icon: <FiPackage />, color: "white", path: "/myorder" },
-                { label: "WALLET", icon: <FiCreditCard />, color: "white", path: "/wallet" },
-                { label: "HISTORY", icon: <FiRepeat />, color: "white", path: "/transactions" },
-              ].map((item, idx) => (
-                <motion.button key={item.label} whileHover={{ y: -5, backgroundColor: "rgba(255,255,255,0.08)" }}
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + idx * 0.1 }}
-                  onClick={() => navigate(item.path)}
-                  className="bg-white/3 border border-white/5 rounded-2xl p-6 flex flex-col items-center gap-4 transition-colors cursor-pointer">
-                  <div className="text-2xl text-white/60">{item.icon}</div>
-                  <span className="text-[10px] tracking-[0.3em] font-bold text-gray-400">{item.label}</span>
-                  <span className="text-white/20 mt-2"><FiChevronRight /></span>
-                </motion.button>
-              ))}
             </div>
+
+            {/* Sub-Navigation Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { label: "MY ORDERS", icon: Package, path: "/myorder", desc: "Track & review orders" },
+                { label: "ALDEN WALLET", icon: CreditCard, path: "/wallet", desc: "Digital wallet balance" },
+                { label: "TRANSACTIONS", icon: Repeat, path: "/transactions", desc: "Ledger transaction history" },
+              ].map((card) => {
+                const IconComp = card.icon
+                return (
+                  <button
+                    key={card.label}
+                    type="button"
+                    onClick={() => navigate(card.path)}
+                    className="bg-[#FBF9F6] border border-[#DED4CB] rounded-[10px] p-6 text-center space-y-2 hover:border-[#8B634B] hover:shadow-xs transition-all cursor-pointer group"
+                  >
+                    <IconComp className="w-6 h-6 text-[#8B634B] mx-auto group-hover:scale-110 transition-transform" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#30251F]">
+                      {card.label}
+                    </h3>
+                    <p className="text-[11px] text-[#76675D]">{card.desc}</p>
+                  </button>
+                )
+              })}
+            </div>
+
           </div>
 
-          {/* Right Section (Address Section) */}
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="col-span-4">
+          {/* Right Column (4 Columns: Address Management) */}
+          <div className="lg:col-span-4">
             <AddressSection />
-          </motion.div>
+          </div>
+
         </div>
+
       </main>
 
-      {/* Modals (Edit / ChangePassword) */}
-      <AnimatePresence>
-        {(showEditModal || showPasswordModal) && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-xl z-100 flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#0a0a0a] border border-white/10 rounded-4xl p-10 w-full max-w-lg relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-white/40 to-transparent"></div>
-              
-              <button onClick={() => { setShowEditModal(false); setShowPasswordModal(false); }}
-                className="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors cursor-pointer">
-                <FiX size={24} />
-              </button>
+      {/* Edit Profile Details Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="UPDATE PROFILE DETAILS"
+      >
+        <div className="space-y-4 font-sans">
+          <Input
+            label="Full Name"
+            value={editData.name}
+            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+          />
+          <Input
+            label="Phone Number"
+            value={editData.phone}
+            onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+          />
+          <div className="space-y-1">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[#30251F]">Profile Photo</label>
+            <input
+              type="file"
+              onChange={(e) => setEditData({ ...editData, image: e.target.files[0] })}
+              className="w-full text-xs text-[#76675D] file:mr-4 file:py-2 file:px-4 file:rounded-[4px] file:border-0 file:text-xs file:font-semibold file:bg-[#8B634B] file:text-white hover:file:bg-[#30251F]"
+            />
+          </div>
+          <div className="pt-3 flex justify-end space-x-2">
+            <Button variant="secondary" onClick={() => setShowEditModal(false)}>CANCEL</Button>
+            <Button variant="primary" onClick={handleUpdateProfile}>SAVE CHANGES</Button>
+          </div>
+        </div>
+      </Modal>
 
-              {/* User Details Edit */}
-              {showEditModal ? (
-                <div className="space-y-8">
-                  <header>
-                    <h3 className="text-2xl font-black italic tracking-tighter uppercase">Update Identity.</h3>
-                    <p className="text-[10px] text-gray-500 tracking-[0.2em]">RE-ENSURING USER DETAILS</p>
-                  </header>
-                  
-                  <div className="space-y-4">
-
-                    {/* Name Section */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] tracking-widest text-gray-600 uppercase">User Name</label>
-                      <input type="text" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 focus:border-white/40
-                        focus:outline-none transition-all placeholder:text-gray-700"
-                        placeholder="IDENTIFIER"/>
-                    </div>
-
-                    {/* Phone Section */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] tracking-widest text-gray-600 uppercase">User Phone</label>
-                      <input type="text" value={editData.phone} onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 focus:border-white/40
-                        focus:outline-none transition-all placeholder:text-gray-700"
-                        placeholder="PHONE_HASH"/>
-                    </div>
-
-                    {/* Image Section */}
-                    <div className="space-y-2 pt-2">
-                      <label className="text-[10px] tracking-widest text-gray-600 uppercase block mb-2">Image</label>
-                      <input type="file" onChange={(e) => setEditData({ ...editData, image: e.target.files[0] })}
-                        className="text-[10px] text-gray-500 file:bg-white/10 file:text-white file:border-0 file:rounded-full
-                        file:px-4 file:py-2 file:mr-4 file:cursor-pointer hover:file:bg-white/20 transition-all"/>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons (cancel / save) */}
-                  <div className="flex gap-4 pt-4">
-                    <button onClick={() => setShowEditModal(false)} className="flex-1 py-4 text-[10px] font-bold tracking-[0.3em] border
-                      border-white/10 rounded-xl hover:bg-white/5 transition-all cursor-pointer">Cancel</button>
-                    <button onClick={handleUpdateProfile} className="flex-1 py-4 text-[10px] font-bold tracking-[0.3em] bg-white
-                      text-black rounded-xl hover:bg-gray-200 transition-all cursor-pointer">SAVE</button>
-                  </div>
-                </div>
-              ) : (
-
-                // Change Password Modal
-                <div className="space-y-8">
-                  <header>
-                    <h3 className="text-2xl font-black italic tracking-tighter uppercase">Access Key.</h3>
-                    <p className="text-[10px] text-gray-500 tracking-[0.2em]">ENCRYPTING NEW CREDENTIALS</p>
-                  </header>
-
-                  <div className="space-y-4">
-                    {['currentPassword', 'newPassword', 'confirmPassword'].map((field) => (
-                      <input key={field} type="password" placeholder={field.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                        value={passwordData[field]} onChange={(e) => setPasswordData({ ...passwordData, [field]: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 focus:border-white/40
-                        focus:outline-none transition-all placeholder:text-gray-700 text-sm"/>
-                    ))}
-                    {passwordError && (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-[10px] tracking-widest uppercase">
-                        Error: {passwordError}
-                      </motion.p>
-                    )}
-                  </div>
-
-                  {/* Action Buttons (cancel / save) */}
-                  <div className="flex gap-4 pt-4">
-                    <button onClick={() => setShowPasswordModal(false)} className="flex-1 py-4 text-[10px] font-bold tracking-[0.3em] 
-                      border border-white/10 rounded-xl hover:bg-white/5 transition-all cursor-pointer">CANCEL</button>
-                    <button onClick={handleChangePassword} className="flex-1 py-4 text-[10px] font-bold tracking-[0.3em] bg-white
-                      text-black rounded-xl hover:bg-gray-200 transition-all cursor-pointer">OVERWRITE</button>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Change Password Modal */}
+      <Modal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        title="CHANGE PASSWORD"
+      >
+        <div className="space-y-3 font-sans">
+          <Input
+            label="Current Password"
+            type="password"
+            value={passwordData.currentPassword}
+            onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+          />
+          <Input
+            label="New Password"
+            type="password"
+            value={passwordData.newPassword}
+            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+          />
+          <Input
+            label="Confirm New Password"
+            type="password"
+            value={passwordData.confirmPassword}
+            onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+          />
+          {passwordError && (
+            <p className="text-xs text-[#8C2727] font-semibold">{passwordError}</p>
+          )}
+          <div className="pt-3 flex justify-end space-x-2">
+            <Button variant="secondary" onClick={() => setShowPasswordModal(false)}>CANCEL</Button>
+            <Button variant="primary" onClick={handleChangePassword}>UPDATE PASSWORD</Button>
+          </div>
+        </div>
+      </Modal>
 
       <Footer />
     </div>

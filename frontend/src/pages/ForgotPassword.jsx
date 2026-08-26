@@ -1,8 +1,13 @@
 import React, { useState } from "react"
 import { showSuccess, showError } from "../utils/alerts"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import axiosInstance from "../utils/axiosInstance"
+import Button from "../component/Button"
+import Input from "../component/Input"
 
+/**
+ * ForgotPassword — Alden Clothing Timeless Editorial Luxury Forgot Password Page
+ */
 const ForgotPassword = () => {
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
@@ -30,43 +35,52 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-100 bg-white rounded-2xl shadow-2xl p-8 space-y-5 animate-fade-in">
-
-        {/* Brand */}
-        <div className="text-center">
-          <p className="text-xs text-gray-400">Secure your account</p>
+    <div className="min-h-screen bg-[#F5EFE8] flex items-center justify-center p-4 sm:p-6 font-sans text-[#30251F]">
+      <div className="w-full max-w-md bg-[#FBF9F6] border border-[#DED4CB] rounded-[16px] p-8 sm:p-10 shadow-sm space-y-6">
+        
+        {/* Brand Editorial Header */}
+        <div className="text-center space-y-1">
+          <Link to="/" className="text-3xl font-serif tracking-tight text-[#30251F] font-normal uppercase">
+            ALDEN CLOTHING
+          </Link>
+          <p className="text-xs uppercase tracking-widest text-[#76675D]">
+            RECOVER YOUR ACCOUNT
+          </p>
         </div>
 
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-center">Forgot Password</h2>
-        <p className="text-xs text-center text-gray-500">
-          Enter your registered email to receive OTP
-        </p>
+        <div className="space-y-4 pt-2">
+          <p className="text-xs text-center text-[#76675D]">
+            Enter your registered email address below to receive a security OTP code.
+          </p>
 
-        {/* Email Input */}
-        <div className="relative">
-          <input value={email} onChange={(e) => setEmail(e.target.value)}
-            className="peer w-full px-4 pt-5 pb-2 border rounded-lg outline-none focus:ring-1 focus:ring-black"
-            placeholder=" " />
-          <label className="absolute left-4 top-2 text-xs text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm transition-all">
-            Registered Email
-          </label>
-        </div>
+          <Input
+            label="Registered Email"
+            type="email"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        {/* Inline Error */}
-        {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-xs text-[#8C2727] text-center font-semibold">{error}</p>}
 
-        <div className="flex flex-col gap-2">
-          <button onClick={handleSendOtp} disabled={loading}
-            className="w-full bg-black text-white py-2 rounded-full hover:bg-white hover:text-black hover:border hover:border-black transition-all duration-300 hover:scale-[1.02]">
-            {loading ? "Sending OTP..." : "Send OTP"}
-          </button>
+          <Button
+            variant="primary"
+            fullWidth
+            disabled={loading || !email}
+            onClick={handleSendOtp}
+            className="h-11"
+          >
+            {loading ? "SENDING OTP..." : "SEND OTP CODE"}
+          </Button>
 
-          <button onClick={() => navigate("/login")}
-            className="w-full border border-black py-2 rounded-full hover:bg-black hover:text-white transition">
-            Cancel
-          </button>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => navigate("/login")}
+            className="h-11"
+          >
+            CANCEL & RETURN TO LOGIN
+          </Button>
         </div>
 
       </div>

@@ -1,50 +1,39 @@
-import Product from '../models/Product.js'
-import Category from "../models/Category.js"
+import {
+  fetchPublicProducts,
+  fetchProductById
+} from "../services/productService.js"
 
 export const getProducts = async (req, res) => {
   try {
     const { category } = req.query
-    let filter = { isDeleted: false }
+    const products = await fetchPublicProducts({ category })
 
-    if (category) {
-      const cat = await Category.findOne({ name: category })
-      if (cat) {
-        filter.category = cat._id
-      }
-    }
-
-    const products = await Product.find(filter).populate("category")
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: products
     })
   } catch (error) {
-    res.status(500).json({
+    const statusCode = error.statusCode || 500
+    return res.status(statusCode).json({
       success: false,
       message: error.message
     })
   }
 }
 
-export const getSingleProduct = async (req, res) =>{
-    try{
-        const product = await Product.findById(req.params.id)
+export const getSingleProduct = async (req, res) => {
+  try {
+    const product = await fetchProductById(req.params.id)
 
-        if(!product){
-            return res.status(404).json({
-                success: false,
-                message: "Product not Found"
-            })
-        }
-        res.status(200).json({
-            success: true,
-            data: product
-        })
-    } catch(error){
-        res.status(500).json({
-            success: false,
-            message: error.message
-        })
-    }
+    return res.status(200).json({
+      success: true,
+      data: product
+    })
+  } catch (error) {
+    const statusCode = error.statusCode || 500
+    return res.status(statusCode).json({
+      success: false,
+      message: error.message
+    })
+  }
 }
