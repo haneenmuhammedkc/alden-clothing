@@ -2,6 +2,10 @@ import User from "../models/User.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import sendEmail from "../utils/sendEmail.js"
+import {
+  getVerificationEmailTemplate,
+  getResetPasswordEmailTemplate
+} from "../utils/emailTemplates.js"
 import admin from "../config/firebaseAdmin.js"
 import { generateSixDigitOtp } from "../utils/otpUtils.js"
 import { ServiceError } from "./serviceError.js"
@@ -44,14 +48,12 @@ export const registerCustomer = async ({ name, email, password, phone }) => {
     isVerified: false
   })
 
-  await sendEmail(
-    normalizedEmail,
-    "Email Verification OTP",
-    `<h2>Welcome ${normalizedName}</h2>
-     <p>Your email verification OTP is:</p>
-     <h1>${otp}</h1>
-     <p>This OTP is valid for 10 minutes.</p>`
-  )
+  const { subject, html } = getVerificationEmailTemplate({
+    name: normalizedName,
+    otp
+  })
+
+  await sendEmail(normalizedEmail, subject, html)
 
   return { message: "OTP sent to your email. Please verify to continue." }
 }
@@ -185,7 +187,9 @@ export const forgotCustomerPassword = async ({ email }) => {
   user.resetOtpExpire = Date.now() + 10 * 60 * 1000
   await user.save()
 
-  await sendEmail(normalizedEmail, "Reset Password OTP", `Your OTP is ${otp}`)
+  const { subject, html } = getResetPasswordEmailTemplate({ otp })
+
+  await sendEmail(normalizedEmail, subject, html)
 
   return { message: "OTP sent successfully" }
 }
